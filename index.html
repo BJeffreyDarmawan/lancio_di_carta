@@ -9,7 +9,7 @@
 <body>
   <canvas id = "renderCanvas"></canvas>
   <script>
-    var canvas, engine, scene, camera, gravity, ground, box, box2, isMoving, paper;
+    var canvas, engine, scene, camera, gravity, table, box, box2, isHolding, paper, power;
     document.addEventListener("DOMContentLoaded", function(){
       //initScene();
       //Get canvas
@@ -28,12 +28,17 @@
       scene.enablePhysics(gravity, physicsEngine);
 
       trashCan = new BABYLON.Mesh.CreateBox("trashCan", 1.0, scene);
-      trashCan.position = new BABYLON.Vector3(0, -1, -10);
+      trashCan.position = new BABYLON.Vector3(5, 0, -10);
 
       //Ground material
-      ground = new BABYLON.Mesh.CreateGround("ground", 5, 5, 1, scene);
-      ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground,
+      table = new BABYLON.Mesh.CreateGround("table", 5, 5, 1, scene);
+      table.position = new BABYLON.Vector3(0, 0, 0);
+      table.physicsImpostor = new BABYLON.PhysicsImpostor(table,
       BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.2, friction: 0.2}, scene);
+
+      floor = new BABYLON.Mesh.CreateGround("floor", 10, 10, 1, scene);
+      floor.position = new BABYLON.Vector3(5, 0, -12);
+      floor.physicImpostor = new BABYLON.PhysicsImpostor(floor, BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.2, friction: 0.2}, scene);
 
       paper = new BABYLON.MeshBuilder.CreateSphere("paper", {}, scene);
       paper.position = new BABYLON.Vector3(0, 0.5, 0);
@@ -53,10 +58,8 @@
 
       // create texture
       var mat = new BABYLON.StandardMaterial("material", scene);
-      // mat.diffuseColor = new BABYLON.Color3(1, 0, 0);
-      // mat.specularColor = new BABYLON.Color3(0, 1, 0);
-      mat.diffuseTexture = new BABYLON.Texture("grass.jpg", scene);
-      mat.specularTexture = new BABYLON.Texture("doge.jpg", scene);
+      mat.diffuseColor = new BABYLON.Color3(1, 0, 0);
+      mat.specularColor = new BABYLON.Color3(0, 1, 0);
       mat.specularPower = 25;
       mat.ambientColor = new BABYLON.Color3(0.23, 0.98, 0.53);
       mat.alpha = 1;
@@ -65,8 +68,22 @@
       var light = new BABYLON.HemisphericLight("hLight", new BABYLON.Vector3(0, 8, 0), scene);
       paper.material = mat;
 
-      engine.runRenderLoop(function(){
+      paper.physicsImpostor = new BABYLON.PhysicsImpostor(paper, BABYLON.PhysicsImpostor.BoxImpostor,
+      {mass: 1, restitution: 0.1, friction: 0}, scene);
+      trashCan.physicsImpostor = new BABYLON.PhysicsImpostor(trashCan, BABYLON.PhysicsImpostor.BoxImpostor,
+      {mass: 10, restitution: 0.5, friction: 0.2}, scene);
 
+      power = 0;
+      window.onkeyup = window.onkeydown = function(e) {
+        if(e.keyCode == 32) {
+          isHolding = e.type == 'keydown';
+        }
+      }
+
+      engine.runRenderLoop(function(){
+        if(isHolding) {
+          paper.physicsImpostor.applyImpulse(new BABYLON.Vector3(0, 1, -1), paper.getAbsolutePosition());
+        }
         scene.render();
       });
     });
