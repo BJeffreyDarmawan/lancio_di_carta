@@ -3,13 +3,13 @@
   <meta charset="UTF-8">
   <title> Week1 </title>
   <link rel="stylesheet" type="text/css" href="style.css"/>
-  <script type="text/javascript" src="D:\Archel\Kuliah\4th Semester\Computer Graphics\Babylon\babylon.custom.js"></script>
+  <script type="text/javascript" src="babylon.custom.js"></script>
   <!-- <script type="text/javascript" src="initScene.js"></script> -->
 </head>
 <body>
   <canvas id = "renderCanvas"></canvas>
   <script>
-    var canvas, engine, scene, camera, gravity, table, box, box2, isHolding, paper, power;
+    var canvas, engine, scene, camera, gravity, table, box, box2, isHolding, paper, targetX, targetZ;
     document.addEventListener("DOMContentLoaded", function(){
       //initScene();
       //Get canvas
@@ -27,21 +27,57 @@
 
       scene.enablePhysics(gravity, physicsEngine);
 
+      /* Trashcan Mesh */
       trashCan = new BABYLON.Mesh.CreateBox("trashCan", 1.0, scene);
-      trashCan.position = new BABYLON.Vector3(5, 0, -10);
+      trashCan.isVisible = false;
+      trashCan.position = new BABYLON.Vector3(5, 5, -10);
+      trashCan.scaling = new BABYLON.Vector3(0.0625, 0.0625, 0.0625);
+      trashCan.physicsImpostor = new BABYLON.PhysicsImpostor(trashCan, BABYLON.PhysicsImpostor.BoxImpostor,
+      {mass: 10, restitution: 0.5, friction: 0.2}, scene);
 
-      //Ground material
+      /* Model for trashcan */
+      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "paper cup.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = trashCan;
+        }
+      })
+
+      /* table for paper */
       table = new BABYLON.Mesh.CreateGround("table", 5, 5, 1, scene);
       table.position = new BABYLON.Vector3(0, 0, 0);
       table.physicsImpostor = new BABYLON.PhysicsImpostor(table,
       BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.2, friction: 0.2}, scene);
 
-      floor = new BABYLON.Mesh.CreateGround("floor", 10, 10, 1, scene);
-      floor.position = new BABYLON.Vector3(5, 0, -12);
-      floor.physicImpostor = new BABYLON.PhysicsImpostor(floor, BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.2, friction: 0.2}, scene);
+      /* texture for table */
+      var tableMat = new BABYLON.StandardMaterial("tableMat", scene);
+      tableMat.diffuseTexture = new BABYLON.Texture("table.jpg", scene);
+      table.material = tableMat;
 
-      paper = new BABYLON.MeshBuilder.CreateSphere("paper", {}, scene);
+      /* floor */
+      floor = new BABYLON.Mesh.CreateGround("floor", 50, 50, 1, scene);
+      floor.position = new BABYLON.Vector3(5, -3, -12);
+      floor.physicImpostor = new BABYLON.PhysicsImpostor(floor, 
+      BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.2, friction: 0.2}, scene);
+
+      var floorMat = new BABYLON.StandardMaterial("floorMat", scene);
+      floorMat.diffuseColor = new BABYLON.Color3(0, 1, 1);
+      floor.material = floorMat;
+
+      /* Paper Mesh */
+      // paper = new BABYLON.MeshBuilder.CreateSphere("paper", {}, scene);
+      // paper.position = new BABYLON.Vector3(0, 0.5, 0);
+      paper = new BABYLON.Mesh.CreateBox("paper", 1.0, scene);
+      paper.isVisible = false;
       paper.position = new BABYLON.Vector3(0, 0.5, 0);
+      paper.scaling = new BABYLON.Vector3(0.75, 0.75, 0.75);
+      paper.physicsImpostor = new BABYLON.PhysicsImpostor(paper, BABYLON.PhysicsImpostor.BoxImpostor,
+      {mass: 1, restitution: 0.1, friction: 0}, scene);
+
+      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "untiene-garbage-papers.babylon", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = paper;
+        }
+      })
 
       //create camera
       camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 10, new BABYLON.Vector3(0, 0, 0), scene);
@@ -55,25 +91,11 @@
       // camera.attachControl(canvas, true);
       // camera.lockedTarget = paper;
 
-
-      // create texture
-      var mat = new BABYLON.StandardMaterial("material", scene);
-      mat.diffuseColor = new BABYLON.Color3(1, 0, 0);
-      mat.specularColor = new BABYLON.Color3(0, 1, 0);
-      mat.specularPower = 25;
-      mat.ambientColor = new BABYLON.Color3(0.23, 0.98, 0.53);
-      mat.alpha = 1;
-
       //Create light
       var light = new BABYLON.HemisphericLight("hLight", new BABYLON.Vector3(0, 8, 0), scene);
-      paper.material = mat;
 
-      paper.physicsImpostor = new BABYLON.PhysicsImpostor(paper, BABYLON.PhysicsImpostor.BoxImpostor,
-      {mass: 1, restitution: 0.1, friction: 0}, scene);
-      trashCan.physicsImpostor = new BABYLON.PhysicsImpostor(trashCan, BABYLON.PhysicsImpostor.BoxImpostor,
-      {mass: 10, restitution: 0.5, friction: 0.2}, scene);
-
-      power = 0;
+      targetX = trashCan.position.x;
+      targetZ = trashCan.position.z;
       window.onkeyup = window.onkeydown = function(e) {
         if(e.keyCode == 32) {
           isHolding = e.type == 'keydown';
@@ -82,7 +104,7 @@
 
       engine.runRenderLoop(function(){
         if(isHolding) {
-          paper.physicsImpostor.applyImpulse(new BABYLON.Vector3(0, 1, -1), paper.getAbsolutePosition());
+          paper.physicsImpostor.applyImpulse(new BABYLON.Vector3(0, 0.5, 0), paper.getAbsolutePosition());
         }
         scene.render();
       });
