@@ -21,6 +21,50 @@
       //Create scene
       scene = new BABYLON.Scene(engine);
 
+      /* Sink */
+      var sink = BABYLON.Mesh.CreateBox("sink", 1.0, scene);
+      sink.position = new BABYLON.Vector3(30, -5, -11);
+      sink.scaling = new BABYLON.Vector3(0.35, 0.35, 0.35);
+      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Sink.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = sink;
+        }
+      })
+
+      /* Toilet */
+      var toilet = BABYLON.Mesh.CreateBox("toilet", 1.0, scene);
+      toilet.position = new BABYLON.Vector3(51, -10, -11);
+      toilet.scaling = new BABYLON.Vector3(0.35, 0.35, 0.35);
+      toilet.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(180).radians(), BABYLON.Space.LOCAL);
+      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "hsdc00.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = toilet;
+        }
+      })
+
+      /* Door */
+      var door = BABYLON.Mesh.CreateBox("door", 1.0, scene);
+      door.position = new BABYLON.Vector3(35, -10, 26);
+      door.scaling = new BABYLON.Vector3(0.01, 1/110, 0.01);
+      door.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
+      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "frise11_z_.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = door;
+          var doorMat = new BABYLON.StandardMaterial("doorMat", scene);
+          doorMat.diffuseTexture = new BABYLON.Texture("table.jpg");
+          newMeshes.material = doorMat;
+        }
+      })
+
+      /* Broom */
+      var broom = BABYLON.Mesh.CreateBox("broom", 1.0, scene);
+      broom.position = new BABYLON.Vector3(60, -10, 26);
+      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "broom.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = broom;
+        }
+      })
+
       //Create physics engine
       gravity = new BABYLON.Vector3(0, -9.81, 0);
       physicsEngine = new BABYLON.CannonJSPlugin();
@@ -49,7 +93,7 @@
       // var temp = new BABYLON.Mesh.CreateBox("temp", 1.0, scene);
       // temp.scaling = new BABYLON.Vector3(5, 5, 5);
       // temp.position = new BABYLON.Vector3(30, -7, 15);
-      trashCan.isVisible = false;
+      // trashCan.isVisible = false;
       trashCan.position = new BABYLON.Vector3(30, -8, 5);
       trashCan.scaling = new BABYLON.Vector3(5, 5, 5);
 
@@ -60,11 +104,11 @@
       trashCan.material = temp;
 
       /* Model for trashcan */
-      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "trash_can.obj", scene, function(newMeshes) {
-        for(i = 0; i < newMeshes.length; i++) {
-          newMeshes[i].parent = trashCan;
-        }
-      })
+      // BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "trash_can.obj", scene, function(newMeshes) {
+      //   for(i = 0; i < newMeshes.length; i++) {
+      //     newMeshes[i].parent = trashCan;
+      //   }
+      // })
 
       wall.physicsImpostor = new BABYLON.PhysicsImpostor(wall, BABYLON.PhysicsImpostor.BoxImpostor,
       {mass: 10000, restitution: 0.0, friction: 0.9}, scene);
@@ -112,14 +156,14 @@
       //create camera
       camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 10, new BABYLON.Vector3(7, 0, 5), scene);
       camera.attachControl(canvas, true);
-      // camera = new BABYLON.FollowCamera("followCam", new BABYLON.Vector3(0, 10, -10), scene);
+      // camera = new BABYLON.FollowCamera("followCam", new BABYLON.Vector3(0, 0, 0), scene);
       // camera.radius = 10;
       // camera.heightOffset = 5;
       // camera.rotationOffset = 0;
       // camera.cameraAcceleration = 0.005;
       // camera.maxCameraSpeed = 10;
       // camera.attachControl(canvas, true);
-      // camera.lockedTarget = paper;
+      // camera.lockedTarget = table;
 
       //Create light
       var light = new BABYLON.HemisphericLight("hLight", new BABYLON.Vector3(0, 8, 0), scene);
