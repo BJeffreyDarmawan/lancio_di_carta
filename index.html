@@ -9,7 +9,7 @@
 <body>
   <canvas id = "renderCanvas"></canvas>
   <script>
-    var canvas, engine, scene, camera, gravity, table, box, box2, isHolding, paper, targetX, targetZ, wall, wall2, wall3;
+    var canvas, engine, scene, camera, gravity, table, box, box2, isHolding, paper, targetX, targetZ, wall, wall2, wall3, power, done, thrown, test;
     document.addEventListener("DOMContentLoaded", function(){
       //initScene();
       //Get canvas
@@ -42,6 +42,9 @@
         }
       })
 
+      // var doorMat = new BABYLON.StandardMaterial("door", scene);
+      // doorMat.diffuseTexture = new BABYLON.Texture("table.jpg");
+
       /* Door */
       var door = BABYLON.Mesh.CreateBox("door", 1.0, scene);
       door.position = new BABYLON.Vector3(35, -10, 26);
@@ -50,9 +53,6 @@
       BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "frise11_z_.obj", scene, function(newMeshes) {
         for(i = 0; i < newMeshes.length; i++) {
           newMeshes[i].parent = door;
-          var doorMat = new BABYLON.StandardMaterial("doorMat", scene);
-          doorMat.diffuseTexture = new BABYLON.Texture("table.jpg");
-          newMeshes.material = doorMat;
         }
       })
 
@@ -94,8 +94,10 @@
       // temp.scaling = new BABYLON.Vector3(5, 5, 5);
       // temp.position = new BABYLON.Vector3(30, -7, 15);
       // trashCan.isVisible = false;
-      trashCan.position = new BABYLON.Vector3(30, -8, 5);
+      trashCan.position = new BABYLON.Vector3(40, -6, 5);
       trashCan.scaling = new BABYLON.Vector3(5, 5, 5);
+      trashCan.physicsImpostor = new BABYLON.PhysicsImpostor(trashCan, BABYLON.PhysicsImpostor.BoxImpostor, 
+      {mass: 10000, restitution: 0.9, friction: 0.9}, scene);
 
       /*Temporary material for trash can -DELETE LATER-*/
       var temp = new BABYLON.StandardMaterial("temp", scene);
@@ -109,6 +111,13 @@
       //     newMeshes[i].parent = trashCan;
       //   }
       // })
+
+      /* Trashcan Hitbox */
+      var hitBox = BABYLON.MeshBuilder.CreateBox("hitBox", {height: 5, width: 5, depth: 0.5}, scene);
+      hitBox.position = new BABYLON.Vector3(40, 0, 5);
+      hitBox.rotate(new BABYLON.Vector3(5, 0, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
+      hitBox.physicsImpostor = new BABYLON.PhysicsImpostor(hitBox,
+      BABYLON.PhysicsImpostor.BoxImpostor, {mass: 1000, restitution: 0.9, friction: 0.9}, scene);
 
       wall.physicsImpostor = new BABYLON.PhysicsImpostor(wall, BABYLON.PhysicsImpostor.BoxImpostor,
       {mass: 10000, restitution: 0.0, friction: 0.9}, scene);
@@ -142,6 +151,7 @@
       /* Paper Mesh */
       // paper = new BABYLON.MeshBuilder.CreateSphere("paper", {}, scene);
       // paper.position = new BABYLON.Vector3(0, 0.5, 0);
+      thrown = false;
       paper = new BABYLON.Mesh.CreateBox("paper", 1.0, scene);
       paper.isVisible = false;
       paper.position = new BABYLON.Vector3(3, 0.5, 5);
@@ -168,6 +178,8 @@
       //Create light
       var light = new BABYLON.HemisphericLight("hLight", new BABYLON.Vector3(0, 8, 0), scene);
 
+
+      /* Spacebar control to throw the paper */
       targetX = trashCan.position.x;
       targetZ = trashCan.position.z;
       window.onkeyup = window.onkeydown = function(e) {
@@ -175,22 +187,55 @@
           isHolding = e.type == 'keydown';
         }
       }
+      // power = 0;
+      // window.onkeyup = window.onkeydown = function(evt) {
+      //     if(evt.keyCode == 32) {
+      //       done = false;
+      //       power += 0.4;
+      //   }
+      //   return false;
+      // }
+      // window.onkeyup = window.onkeyup = function(e) {
+      //   if(e.keyCode == 32) {
+      //     done = true;
+      //   }
+      // }
 
-      trashCan.physicsImpostor = new BABYLON.PhysicsImpostor(trashCan, BABYLON.PhysicsImpostor.BoxImpostor, 
-      {mass: 10, restitution: 0.9, friction: 0.9}, scene);
+      // Physics Impostor for trashcan and paper
       paper.physicsImpostor = new BABYLON.PhysicsImpostor(paper, BABYLON.PhysicsImpostor.BoxImpostor,
       {mass: 1, restitution: 0.5, friction: 0.2}, scene);
 
+      test = 0;
+
       /*Register collision between trashcan and the paper*/
       paper.physicsImpostor.registerOnPhysicsCollide(trashCan.physicsImpostor, function(main, collided) {
-        console.log("Kena bro");
+        thrown = true;
+        test += 2;
+        // console.log("Kena bro");
         /*Point added*/
+      })
+      // Registers collision between paper and floor -> ga bisa gatau kenapa
+      paper.physicsImpostor.registerOnPhysicsCollide(floor.physicsImpostor, function(main, collided) {
+        thrown = true;
+        console.log("Kena bro");
       })
 
       engine.runRenderLoop(function(){
-        if(isHolding) {
-          paper.physicsImpostor.applyImpulse(new BABYLON.Vector3(Math.sin(-targetX), 0.4, 0), paper.getAbsolutePosition());
+        // repositioning the paper on the table
+        if(thrown == true) {
+          setTimeout(function() {
+            thrown = false;
+            paper.position = new BABYLON.Vector3(3, 1, 5);
+            // paper.physicsImpostor = new BABYLON.PhysicsImpostor(paper, BABYLON.PhysicsImpostor.BoxImpostor,
+            // {mass: 1, restitution: 0.5, friction: 0.2}, scene);
+          }, 8000);
         }
+
+        if(isHolding) {
+          paper.physicsImpostor.applyImpulse(new BABYLON.Vector3(Math.sin(targetX), 0.4, 0), paper.getAbsolutePosition());
+        }
+        done = false;
+        // isHolding = true;
         scene.render();
       });
     });
