@@ -1,7 +1,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title> Week1 </title>
+  <title> Lancio Di Carta </title>
   <link rel="stylesheet" type="text/css" href="style.css"/>
   <script type="text/javascript" src="babylon.custom.js"></script>
   <!-- <script type="text/javascript" src="initScene.js"></script> -->
@@ -58,7 +58,7 @@
 
       /* Broom */
       var broom = BABYLON.Mesh.CreateBox("broom", 1.0, scene);
-      broom.position = new BABYLON.Vector3(60, -10, 26);
+      broom.position = new BABYLON.Vector3(60, -9, 26);
       BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "broom.obj", scene, function(newMeshes) {
         for(i = 0; i < newMeshes.length; i++) {
           newMeshes[i].parent = broom;
@@ -114,7 +114,7 @@
 
       /* Trashcan Hitbox */
       var hitBox = BABYLON.MeshBuilder.CreateBox("hitBox", {height: 5, width: 5, depth: 0.5}, scene);
-      hitBox.position = new BABYLON.Vector3(40, 0, 5);
+      hitBox.position = new BABYLON.Vector3(40, -2, 5);
       hitBox.rotate(new BABYLON.Vector3(5, 0, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
       hitBox.physicsImpostor = new BABYLON.PhysicsImpostor(hitBox,
       BABYLON.PhysicsImpostor.BoxImpostor, {mass: 1000, restitution: 0.9, friction: 0.9}, scene);
@@ -152,10 +152,12 @@
       // paper = new BABYLON.MeshBuilder.CreateSphere("paper", {}, scene);
       // paper.position = new BABYLON.Vector3(0, 0.5, 0);
       thrown = false;
-      paper = new BABYLON.Mesh.CreateBox("paper", 1.0, scene);
+      paper = new BABYLON.MeshBuilder.CreateSphere("paper", {}, scene);
       paper.isVisible = false;
       paper.position = new BABYLON.Vector3(3, 0.5, 5);
       paper.scaling = new BABYLON.Vector3(0.75, 0.75, 0.75);
+      paper.physicsImpostor = new BABYLON.PhysicsImpostor(paper, BABYLON.PhysicsImpostor.BoxImpostor,
+      {mass: 1, restitution: 0.5, friction: 0.2}, scene);
 
       BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "untiene-garbage-papers.babylon", scene, function(newMeshes) {
         for(i = 0; i < newMeshes.length; i++) {
@@ -164,7 +166,7 @@
       })
 
       //create camera
-      camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 10, new BABYLON.Vector3(7, 0, 5), scene);
+      camera = new BABYLON.ArcRotateCamera("Camera", Math.PI, Math.PI/2.5, 7, new BABYLON.Vector3(5, 0, 5), scene);
       camera.attachControl(canvas, true);
       // camera = new BABYLON.FollowCamera("followCam", new BABYLON.Vector3(0, 0, 0), scene);
       // camera.radius = 10;
@@ -201,12 +203,6 @@
       //   }
       // }
 
-      // Physics Impostor for trashcan and paper
-      paper.physicsImpostor = new BABYLON.PhysicsImpostor(paper, BABYLON.PhysicsImpostor.BoxImpostor,
-      {mass: 1, restitution: 0.5, friction: 0.2}, scene);
-
-      test = 0;
-
       /*Register collision between trashcan and the paper*/
       paper.physicsImpostor.registerOnPhysicsCollide(trashCan.physicsImpostor, function(main, collided) {
         thrown = true;
@@ -214,10 +210,14 @@
         // console.log("Kena bro");
         /*Point added*/
       })
-      // Registers collision between paper and floor -> ga bisa gatau kenapa
-      paper.physicsImpostor.registerOnPhysicsCollide(floor.physicsImpostor, function(main, collided) {
+      /* Registers collision between paper and the hitbox */
+      paper.physicsImpostor.registerOnPhysicsCollide(hitBox.physicsImpostor, function(main, collided) {
         thrown = true;
         console.log("Kena bro");
+      })
+      /* Registers collision between paper and the floor --> this doesn't work gatau kenapa */
+      paper.physicsImpostor.registerOnPhysicsCollide(floor.physicsImpostor, function(main, collided) {
+        thrown = true;
       })
 
       engine.runRenderLoop(function(){
@@ -226,8 +226,6 @@
           setTimeout(function() {
             thrown = false;
             paper.position = new BABYLON.Vector3(3, 1, 5);
-            // paper.physicsImpostor = new BABYLON.PhysicsImpostor(paper, BABYLON.PhysicsImpostor.BoxImpostor,
-            // {mass: 1, restitution: 0.5, friction: 0.2}, scene);
           }, 8000);
         }
 
