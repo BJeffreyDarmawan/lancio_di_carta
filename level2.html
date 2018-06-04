@@ -88,8 +88,6 @@
         }
       })
 
-     /* Clock */
-
       //Create physics engine
       gravity = new BABYLON.Vector3(0, -9.81, 0);
       physicsEngine = new BABYLON.CannonJSPlugin();
@@ -194,7 +192,7 @@
       BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.7, friction: 0.5}, scene);
 
       var floorMat = new BABYLON.StandardMaterial("floorMat", scene);
-      floorMat.diffuseTexture = new BABYLON.Texture("bathroomFloor.jpg", scene);
+      floorMat.diffuseTexture = new BABYLON.Texture("office_floor.jpg", scene);
       floor.material = floorMat;
 
       /* Paper Mesh */

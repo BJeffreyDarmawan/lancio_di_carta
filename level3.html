@@ -23,61 +23,17 @@
 
      /* Desk */
      var desk = BABYLON.Mesh.CreateBox("desk", 1.0, scene);
-     desk.position = new BABYLON.Vector3(42, -10, 30);
-     desk.scaling = new BABYLON.Vector3(6, 6, 6);
+     desk.position = new BABYLON.Vector3(52, -10, -22);
+     desk.scaling = new BABYLON.Vector3(0.5, 0.25, 0.25);
      desk.isVisible = false;
-     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Gaming Desk.obj", scene, function(newMeshes) {
+     // desk.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(180).radians(), BABYLON.Space.LOCAL);
+     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "ModernDeskOBJ.obj", scene, function(newMeshes) {
         for(i = 0; i < newMeshes.length; i++) {
           newMeshes[i].parent = desk;
         }
       })
 
-     var desk2 = BABYLON.Mesh.CreateBox("desk2", 1.0, scene);
-     desk2.position = new BABYLON.Vector3(42, -10, -25);
-     desk2.scaling = new BABYLON.Vector3(8, 12, 8);
-     desk2.isVisible = false;
-     desk2.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
-     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Metal Desk.obj", scene, function(newMeshes) {
-        for(i = 0; i < newMeshes.length; i++) {
-          newMeshes[i].parent = desk2;
-        }
-      })
-
-     var desk3 = BABYLON.Mesh.CreateBox("desk3", 1.0, scene);
-     desk3.position = new BABYLON.Vector3(70, -10, 20);
-     desk3.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
-     desk3.isVisible = false;
-     desk3.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(180).radians(), BABYLON.Space.LOCAL);
-     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Table_chair_senor_obj.obj", scene, function(newMeshes) {
-        for(i = 0; i < newMeshes.length; i++) {
-          newMeshes[i].parent = desk3;
-        }
-      })
-
-
      /* Chair */
-
-     var chair = BABYLON.Mesh.CreateBox("chair", 1.0, scene);
-     chair.position = new BABYLON.Vector3(42, -10, 20);
-     chair.isVisible = false;
-     chair.scaling = new BABYLON.Vector3(0.5, 0.5, 0.5);
-     chair.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(180).radians(), BABYLON.Space.LOCAL);
-     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Chair.obj", scene, function(newMeshes) {
-        for(i = 0; i < newMeshes.length; i++) {
-          newMeshes[i].parent = chair;
-        }
-      })
-
-     var chair2 = BABYLON.Mesh.CreateBox("chair2", 1.0, scene);
-     chair2.position = new BABYLON.Vector3(42, -10, -10);
-     chair2.isVisible = false;
-     chair2.scaling = new BABYLON.Vector3(6, 6, 6);
-     chair2.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(180).radians(), BABYLON.Space.LOCAL);
-     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "office_chair.obj", scene, function(newMeshes) {
-        for(i = 0; i < newMeshes.length; i++) {
-          newMeshes[i].parent = chair2;
-        }
-      })
 
      /* Clock */
 
@@ -98,20 +54,6 @@
       // rotate the 3rd wall(the front wall)
       wall3.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
 
-      /* Separators */
-      var wall4 = BABYLON.MeshBuilder.CreateBox("wall4", {height:20, width:10, depth: 0.5}, scene);
-      wall4.position = new BABYLON.Vector3(58, 0, 31);
-      wall4.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
-      var wall5 = BABYLON.MeshBuilder.CreateBox("wall5", {height:20, width:10, depth: 0.5}, scene);
-      wall5.position = new BABYLON.Vector3(58, 0, -19);
-      wall5.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
-      var wall6 = BABYLON.MeshBuilder.CreateBox("wall6", {height:20, width:10, depth: 0.5}, scene);
-      wall6.position = new BABYLON.Vector3(28, 0, 31);
-      wall6.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
-      var wall7 = BABYLON.MeshBuilder.CreateBox("wall7", {height:20, width:10, depth: 0.5}, scene);
-      wall7.position = new BABYLON.Vector3(28, 0, -19);
-      wall7.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
-
       var mainWall = new BABYLON.StandardMaterial("mainWall", scene);
       mainWall.diffuseTexture = new BABYLON.Texture("office_wall.jpg");
       wall.material = mainWall;
@@ -120,13 +62,6 @@
       var frontWall = new BABYLON.StandardMaterial("frontWall", scene);
       frontWall.diffuseTexture = new BABYLON.Texture("front_wall.jpg");
       wall3.material = frontWall;
-
-      var separatorMat = new BABYLON.StandardMaterial("separatorMat", scene);
-      separatorMat.diffuseTexture = new BABYLON.Texture("office_separator.jpg");
-      wall4.material = separatorMat;
-      wall5.material = separatorMat;
-      wall6.material = separatorMat;
-      wall7.material = separatorMat;
 
       /* Trashcan Mesh */
       trashCan = new BABYLON.Mesh.CreateBox("trashCan", 1.0, scene);
@@ -185,7 +120,7 @@
       BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.7, friction: 0.5}, scene);
 
       var floorMat = new BABYLON.StandardMaterial("floorMat", scene);
-      floorMat.diffuseTexture = new BABYLON.Texture("bathroomFloor.jpg", scene);
+      floorMat.diffuseTexture = new BABYLON.Texture("floor.jpg", scene);
       floor.material = floorMat;
 
       /* Paper Mesh */
