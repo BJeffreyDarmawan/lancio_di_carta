@@ -9,7 +9,7 @@
 <body>
   <canvas id = "renderCanvas"></canvas>
   <script>
-    var canvas, engine, scene, camera, gravity, table, box, box2, isHolding, paper, targetX, targetZ, wall, wall2, wall3, power, done, thrown, test;
+    var canvas, engine, scene, camera, gravity, table, box, box2, isHolding, paper, targetX, targetZ, wall, wall2, wall3, power, powerY, done, thrown, goal;
     document.addEventListener("DOMContentLoaded", function(){
       //initScene();
       //Get canvas
@@ -22,8 +22,71 @@
       scene = new BABYLON.Scene(engine);
 
      /* Desk */
+     var desk = BABYLON.Mesh.CreateBox("desk", 1.0, scene);
+     desk.position = new BABYLON.Vector3(42, -10, 35);
+     desk.scaling = new BABYLON.Vector3(6, 6, 6);
+     desk.isVisible = false;
+     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Gaming Desk.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = desk;
+        }
+      })
+
+     var desk2 = BABYLON.Mesh.CreateBox("desk2", 1.0, scene);
+     desk2.position = new BABYLON.Vector3(42, -10, -30);
+     desk2.scaling = new BABYLON.Vector3(8, 12, 8);
+     desk2.isVisible = false;
+     desk2.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
+     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Metal Desk.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = desk2;
+        }
+      })
+
+     var desk3 = BABYLON.Mesh.CreateBox("desk3", 1.0, scene);
+     desk3.position = new BABYLON.Vector3(70, -10, 25);
+     desk3.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
+     desk3.isVisible = false;
+     desk3.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(180).radians(), BABYLON.Space.LOCAL);
+     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Table_chair_senor_obj.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = desk3;
+        }
+      })
+
+     var desk4 = BABYLON.Mesh.CreateBox("desk4", 1.0, scene);
+     desk4.position = new BABYLON.Vector3(70, -10, -16);
+     desk4.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
+     desk4.isVisible = false;
+     // desk4.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(180).radians(), BABYLON.Space.LOCAL);
+     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Table_chair_senor_obj.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = desk4;
+        }
+      })
 
      /* Chair */
+     var chair = BABYLON.Mesh.CreateBox("chair", 1.0, scene);
+     chair.position = new BABYLON.Vector3(42, -10, 25);
+     chair.isVisible = false;
+     chair.scaling = new BABYLON.Vector3(0.5, 0.5, 0.5);
+     chair.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(180).radians(), BABYLON.Space.LOCAL);
+     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Chair.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = chair;
+        }
+      })
+
+     var chair2 = BABYLON.Mesh.CreateBox("chair2", 1.0, scene);
+     chair2.position = new BABYLON.Vector3(42, -10, -15);
+     chair2.isVisible = false;
+     chair2.scaling = new BABYLON.Vector3(6, 6, 6);
+     chair2.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(180).radians(), BABYLON.Space.LOCAL);
+     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "office_chair.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = chair2;
+        }
+      })
 
      /* Clock */
 
@@ -36,9 +99,9 @@
       var wallLight1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
       // var wallLight2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(0, 1, -1), scene);
       wall = BABYLON.MeshBuilder.CreateBox("wall", {height:30, width:75, depth: 0.5}, scene);
-      wall.position = new BABYLON.Vector3(40, 5, -24.3);
+      wall.position = new BABYLON.Vector3(40, 5, -30);
       wall2 = BABYLON.MeshBuilder.CreateBox("wall2", {height:30, width:75, depth: 0.5}, scene);
-      wall2.position = new BABYLON.Vector3(40, 5, 36.3);
+      wall2.position = new BABYLON.Vector3(40, 5, 41.3);
       wall3 = BABYLON.MeshBuilder.CreateBox("wall3", {height:30, width:80, depth: 0.5}, scene);
       wall3.position = new BABYLON.Vector3(78, 5, 6);
       // rotate the 3rd wall(the front wall)
@@ -46,16 +109,16 @@
 
       /* Separators */
       var wall4 = BABYLON.MeshBuilder.CreateBox("wall4", {height:20, width:10, depth: 0.5}, scene);
-      wall4.position = new BABYLON.Vector3(58, 0, 31);
+      wall4.position = new BABYLON.Vector3(58, 0, 36);
       wall4.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
       var wall5 = BABYLON.MeshBuilder.CreateBox("wall5", {height:20, width:10, depth: 0.5}, scene);
-      wall5.position = new BABYLON.Vector3(58, 0, -19);
+      wall5.position = new BABYLON.Vector3(58, 0, -25);
       wall5.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
       var wall6 = BABYLON.MeshBuilder.CreateBox("wall6", {height:20, width:10, depth: 0.5}, scene);
-      wall6.position = new BABYLON.Vector3(28, 0, 31);
+      wall6.position = new BABYLON.Vector3(28, 0, 36);
       wall6.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
       var wall7 = BABYLON.MeshBuilder.CreateBox("wall7", {height:20, width:10, depth: 0.5}, scene);
-      wall7.position = new BABYLON.Vector3(28, 0, -19);
+      wall7.position = new BABYLON.Vector3(28, 0, -25);
       wall7.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
 
       var mainWall = new BABYLON.StandardMaterial("mainWall", scene);
@@ -80,7 +143,7 @@
       // temp.scaling = new BABYLON.Vector3(5, 5, 5);
       // temp.position = new BABYLON.Vector3(30, -7, 15);
       // trashCan.isVisible = false;
-      trashCan.position = new BABYLON.Vector3(65, -6, 5);
+      trashCan.position = new BABYLON.Vector3(30, -6, 5);
       trashCan.scaling = new BABYLON.Vector3(5, 5, 5);
       trashCan.physicsImpostor = new BABYLON.PhysicsImpostor(trashCan, BABYLON.PhysicsImpostor.BoxImpostor, 
       {mass: 10000, restitution: 0.9, friction: 0.9}, scene);
@@ -100,7 +163,7 @@
 
       /* Trashcan Hitbox */
       var hitBox = BABYLON.MeshBuilder.CreateBox("hitBox", {height: 5, width: 5, depth: 0.5}, scene);
-      hitBox.position = new BABYLON.Vector3(65, -2, 5);
+      hitBox.position = new BABYLON.Vector3(30, -2, 5);
       hitBox.rotate(new BABYLON.Vector3(5, 0, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
       hitBox.physicsImpostor = new BABYLON.PhysicsImpostor(hitBox,
       BABYLON.PhysicsImpostor.BoxImpostor, {mass: 1000, restitution: 0.9, friction: 0.9}, scene);
@@ -170,35 +233,36 @@
       /* Spacebar control to throw the paper */
       targetX = trashCan.position.x;
       targetZ = trashCan.position.z;
-      window.onkeyup = window.onkeydown = function(e) {
+      // window.onkeyup = window.onkeydown = function(e) {
+      //   if(e.keyCode == 32) {
+      //     isHolding = e.type == 'keydown';
+      //   }
+      // }
+      power = 0;
+      window.onkeyup = window.onkeydown = function(evt) {
+          if(evt.keyCode == 32) {
+            done = false;
+            power += 3;
+            powerY += 0.4;
+        }
+        return false;
+      }
+      window.onkeyup = window.onkeyup = function(e) {
         if(e.keyCode == 32) {
-          isHolding = e.type == 'keydown';
+          done = true;
         }
       }
-      // power = 0;
-      // window.onkeyup = window.onkeydown = function(evt) {
-      //     if(evt.keyCode == 32) {
-      //       done = false;
-      //       power += 0.4;
-      //   }
-      //   return false;
-      // }
-      // window.onkeyup = window.onkeyup = function(e) {
-      //   if(e.keyCode == 32) {
-      //     done = true;
-      //   }
-      // }
 
       /*Register collision between trashcan and the paper*/
       paper.physicsImpostor.registerOnPhysicsCollide(trashCan.physicsImpostor, function(main, collided) {
         thrown = true;
-        test += 2;
         // console.log("Kena bro");
         /*Point added*/
       })
       /* Registers collision between paper and the hitbox */
       paper.physicsImpostor.registerOnPhysicsCollide(hitBox.physicsImpostor, function(main, collided) {
         thrown = true;
+        goal = true;
         console.log("Kena bro");
       })
       /* Registers collision between paper and the floor --> this doesn't work gatau kenapa */
@@ -215,11 +279,24 @@
           }, 8000);
         }
 
-        if(isHolding) {
-          paper.physicsImpostor.applyImpulse(new BABYLON.Vector3(Math.sin(targetX), 0.4, 0), paper.getAbsolutePosition());
+        // apply impulse upon spacebar release
+        if(done) {
+          paper.physicsImpostor.applyImpulse(new BABYLON.Vector3(power, powerY, 0), paper.getAbsolutePosition());
+          done = false;
         }
-        done = false;
+        // done = false;
         // isHolding = true;
+
+        /* Randomize number for the trashcan placement(x between 30 = 75) */
+        if(goal) {
+          var newPos = Math.floor((Math.random() * (75 - 30) + 30));
+          setTimeout(function() {
+            trashCan.position = new BABYLON.Vector3(newPos, -6, 5);
+            hitBox.position = new BABYLON.Vector3(newPos, -2, 5)
+          }, 8000);
+          // console.log(newPos);
+          goal = false;
+        }
         scene.render();
       });
     });
