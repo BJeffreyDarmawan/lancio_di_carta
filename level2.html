@@ -200,7 +200,7 @@
       floor.material = floorMat;
 
       /* Paper Mesh */
-      paper = createPaper();
+      paper = createPaper(floor, hitBox, trashCan);
       // paper = new BABYLON.MeshBuilder.CreateSphere("paper", {}, scene);
       // paper.position = new BABYLON.Vector3(0, 0.5, 0);
       thrown = false;
@@ -245,49 +245,10 @@
         }
       }
 
-      /*Register collision between trashcan and the paper*/
-      paper.physicsImpostor.registerOnPhysicsCollide(trashCan.physicsImpostor, function(main, collided) {
-        if(thrown){
-          thrown = false;
-          setTimeout(function(){
-            paper = createPaper(); 
-            //yak, jadi kalo gw createPaper() gini, dia ga ke apply phisics impostornya(?? harusnya sih keapply, soalnya kan applynya udah di dlm functionnya) or idk, somehow registerOnCollidenya ga ke trigger 
-          }, 2000);
-          // console.log(thrown);
-          // console.log(done);
-        }
-      })
-      /* Registers collision between paper and the hitbox */
-      paper.physicsImpostor.registerOnPhysicsCollide(hitBox.physicsImpostor, function(main, collided) {
-        if(thrown){
-          console.log("point+");
-          thrown = false;
-          power = 0;
-          //point++;
-          setTimeout(function(){
-            paper = createPaper();
-            var newPos = Math.floor((Math.random() * (75 - 30) + 30));
-            trashCan.position = new BABYLON.Vector3(newPos, -6, 5);
-            hitBox.position = new BABYLON.Vector3(newPos, -2, 5);
-          }, 2000);
-          // console.log(thrown);
-          // console.log(done);
-        }
-      })
+      
+      
 
-      /* Registers collision between paper and the floor --> this doesn't work gatau kenapa */
-      paper.physicsImpostor.registerOnPhysicsCollide(floor.physicsImpostor, function(main, collided) {
-        console.log(thrown); // second paper ga masuk ke sini...
-        if(thrown){
-          console.log("kena lantai");
-          thrown = false;
-          setTimeout(function(){
-            paper = createPaper();
-          }, 2000);
-          // console.log(thrown);
-          // console.log(done);
-        }
-      })
+      
 
       engine.runRenderLoop(function(){
         // repositioning the paper on the table
@@ -324,7 +285,7 @@
     });
 
     
-    function createPaper(){
+    function createPaper(lantai, target, kotaksampah){
       kertas = new BABYLON.MeshBuilder.CreateSphere("kertas", {}, scene);
       kertas.isVisible = false;
       kertas.position = new BABYLON.Vector3(3, 0.5, 5);
@@ -339,7 +300,86 @@
       })
 
       kertas.position = new BABYLON.Vector3(3, 1, 5);
+
+      registerFloorCollision(kertas, lantai, target, kotaksampah);
+      registerHitBoxCollision(kertas, lantai, target, kotaksampah);
+      registerTrashCanCollision(kertas, lantai, target, kotaksampah);
+      registerMejaCollision(kertas, lantai, target, kotaksampah);
+      
       return kertas;
+    }
+
+    function registerFloorCollision(kertas, lantai, target, kotaksampah){
+      /* Registers collision between paper and the floor --> this doesn't work gatau kenapa */
+      kertas.physicsImpostor.registerOnPhysicsCollide(lantai.physicsImpostor, function(main, collided) {
+        console.log(thrown); // second paper ga masuk ke sini...
+        if(thrown){
+          thrown = false;
+          powerY = 0;
+          power = 0;
+          setTimeout(function(){ 
+            paper = createPaper(lantai, target, kotaksampah); 
+            //yak, jadi kalo gw createPaper() gini, dia ga ke apply phisics impostornya(?? harusnya sih keapply, soalnya kan applynya udah di dlm functionnya) or idk, somehow registerOnCollidenya ga ke trigger 
+          }, 2000);
+          // console.log(thrown);
+          // console.log(done);
+        }
+      })
+    }
+
+    function registerHitBoxCollision(kertas, lantai, target, kotaksampah){
+      /* Registers collision between paper and the hitbox */
+      kertas.physicsImpostor.registerOnPhysicsCollide(target.physicsImpostor, function(main, collided) {
+        if(thrown){
+          console.log("point+");
+          thrown = false;
+          power = 0;
+          powerY = 0;
+          //point++;
+          setTimeout( function(){
+            paper = createPaper(lantai, target, kotaksampah);
+            var newPos = Math.floor((Math.random() * (75 - 30) + 30));
+            kotaksampah.position = new BABYLON.Vector3(newPos, -6, 5);
+            target.position = new BABYLON.Vector3(newPos, -2, 5);
+          }, 2000);
+          // console.log(thrown);
+          // console.log(done);
+        }
+      })      
+    }
+
+    function registerTrashCanCollision(kertas, lantai, target, kotaksampah){
+      /*Register collision between trashcan and the paper*/
+      kertas.physicsImpostor.registerOnPhysicsCollide(kotaksampah.physicsImpostor, function(main, collided) {
+        if(thrown){
+          thrown = false;
+          powerY = 0;
+          power = 0;
+          setTimeout(function(){ 
+            paper = createPaper(lantai, target, kotaksampah); 
+            //yak, jadi kalo gw createPaper() gini, dia ga ke apply phisics impostornya(?? harusnya sih keapply, soalnya kan applynya udah di dlm functionnya) or idk, somehow registerOnCollidenya ga ke trigger 
+          }, 2000);
+          // console.log(thrown);
+          // console.log(done);
+        }
+      })
+    }
+
+    function registerMejaCollision(kertas, lantai, target, kotaksampah){
+      /*Register collision between trashcan and the paper*/
+      kertas.physicsImpostor.registerOnPhysicsCollide(table.physicsImpostor, function(main, collided) {
+        if(thrown){
+          thrown = false;
+          powerY = 0;
+          power = 0;
+          setTimeout(function(){ 
+            paper = createPaper(lantai, target, kotaksampah); 
+            //yak, jadi kalo gw createPaper() gini, dia ga ke apply phisics impostornya(?? harusnya sih keapply, soalnya kan applynya udah di dlm functionnya) or idk, somehow registerOnCollidenya ga ke trigger 
+          }, 2000);
+          // console.log(thrown);
+          // console.log(done);
+        }
+      })
     }
 
     </script>
