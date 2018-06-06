@@ -2,11 +2,13 @@
 <head>
   <meta charset="UTF-8">
   <title> Lancio Di Carta </title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="style.css"/>
   <script type="text/javascript" src="babylon.custom.js"></script>
   <!-- <script type="text/javascript" src="initScene.js"></script> -->
 </head>
 <body>
+  <a href="index.html" class="btn-success">Back</a>
   <canvas id = "renderCanvas"></canvas>
   <script>
     var canvas, engine, scene, camera, gravity, table, box, box2, isHolding, paper, targetX, targetZ, wall, wall2, wall3, power, powerY, done, thrown, goal, cart;
@@ -171,8 +173,8 @@
       })
 
       /* Trashcan Hitbox */
-      var hitBox = BABYLON.MeshBuilder.CreateBox("hitBox", {height: 3, width: 3, depth: 0.5}, scene);
-      // hitBox.isVisible = false;
+      var hitBox = BABYLON.MeshBuilder.CreateBox("hitBox", {height: 3, width: 3, depth: 1}, scene);
+      hitBox.isVisible = false;
       hitBox.position = new BABYLON.Vector3(30, -4, 5);
       hitBox.rotate(new BABYLON.Vector3(5, 0, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
       hitBox.physicsImpostor = new BABYLON.PhysicsImpostor(hitBox,
@@ -209,7 +211,7 @@
       floor.material = floorMat;
 
       /* Paper Mesh */
-      paper = new BABYLON.MeshBuilder.CreateSphere("paper", {}, scene);
+      paper = new BABYLON.Mesh.CreateBox("paper", 1.0, scene);
       thrown = false;
       paper.isVisible = false;
       paper.position = new BABYLON.Vector3(3, 0.5, 5);

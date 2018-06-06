@@ -2,11 +2,13 @@
 <head>
   <meta charset="UTF-8">
   <title> Lancio Di Carta </title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="style.css"/>
   <script type="text/javascript" src="babylon.custom.js"></script>
   <!-- <script type="text/javascript" src="initScene.js"></script> -->
 </head>
 <body>
+  <a href="index.html" class="btn-success">Back</a>
   <canvas id = "renderCanvas"></canvas>
   <script>
     var canvas, engine, scene, camera, gravity, table, box, box2, isHolding, paper, targetX, targetZ, wall, wall2, wall3, power, powerY, done, thrown, goal;
@@ -160,7 +162,7 @@
 
       /* Trashcan Mesh */
       trashCan = new BABYLON.Mesh.CreateBox("trashCan", 1.0, scene);
-      // trashCan.isVisible = false;
+      trashCan.isVisible = false;
       trashCan.position = new BABYLON.Vector3(30, -6, 5);
       trashCan.scaling = new BABYLON.Vector3(5, 5, 5);
       trashCan.physicsImpostor = new BABYLON.PhysicsImpostor(trashCan, BABYLON.PhysicsImpostor.BoxImpostor, 
@@ -178,9 +180,9 @@
       })
 
       /* Trashcan Hitbox */
-      var hitBox = BABYLON.MeshBuilder.CreateBox("hitBox", {height: 6, width: 6, depth: 0.1}, scene);
+      var hitBox = BABYLON.MeshBuilder.CreateBox("hitBox", {height: 6, width: 6, depth: 1}, scene);
       hitBox.position = new BABYLON.Vector3(30, 2, 5);
-      // hitBox.isVisible = false;
+      hitBox.isVisible = false;
       hitBox.rotate(new BABYLON.Vector3(5, 0, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
       hitBox.physicsImpostor = new BABYLON.PhysicsImpostor(hitBox,
       BABYLON.PhysicsImpostor.BoxImpostor, {mass: 1000, restitution: 0.9, friction: 0.9}, scene);
@@ -292,7 +294,7 @@
 
     
     function createPaper(lantai, target, kotaksampah){
-      kertas = new BABYLON.MeshBuilder.CreateSphere("kertas", {}, scene);
+      kertas = new BABYLON.Mesh.CreateBox("kertas", 1.0, scene);
       kertas.isVisible = false;
       kertas.position = new BABYLON.Vector3(3, 0.5, 5);
       kertas.scaling = new BABYLON.Vector3(0.75, 0.75, 0.75);

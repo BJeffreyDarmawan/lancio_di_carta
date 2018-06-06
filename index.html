@@ -1,232 +1,29 @@
+<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title> Lancio Di Carta </title>
-  <link rel="stylesheet" type="text/css" href="style.css"/>
-  <script type="text/javascript" src="babylon.custom.js"></script>
-  <!-- <script type="text/javascript" src="initScene.js"></script> -->
+	<title>Lancio di Carta</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="index.css">
 </head>
-<body>
-  <canvas id = "renderCanvas"></canvas>
-  <script>
-    var canvas, engine, scene, camera, gravity, table, box, box2, isHolding, paper, targetX, targetZ, wall, wall2, wall3, power, done, thrown, powerY;
-    document.addEventListener("DOMContentLoaded", function(){
-      //initScene();
-      //Get canvas
-      canvas = document.getElementById("renderCanvas");
-
-      //Create babylon engine
-      engine = new BABYLON.Engine(canvas, true);
-
-      //Create scene
-      scene = new BABYLON.Scene(engine);
-
-      /* Sink */
-      var sink = BABYLON.Mesh.CreateBox("sink", 1.0, scene);
-      sink.position = new BABYLON.Vector3(30, -5, -11);
-      sink.isVisible = false;
-      sink.scaling = new BABYLON.Vector3(3, 3, 3);
-      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Sink.obj", scene, function(newMeshes) {
-        for(i = 0; i < newMeshes.length; i++) {
-          newMeshes[i].parent = sink;
-        }
-      })
-
-      /* Toilet */
-      var toilet = BABYLON.Mesh.CreateBox("toilet", 1.0, scene);
-      toilet.position = new BABYLON.Vector3(51, -10, -11);
-      toilet.scaling = new BABYLON.Vector3(0.35, 0.35, 0.35);
-      toilet.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(180).radians(), BABYLON.Space.LOCAL);
-      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "hsdc00.obj", scene, function(newMeshes) {
-        for(i = 0; i < newMeshes.length; i++) {
-          newMeshes[i].parent = toilet;
-        }
-      })
-
-      // var doorMat = new BABYLON.StandardMaterial("door", scene);
-      // doorMat.diffuseTexture = new BABYLON.Texture("table.jpg");
-
-      /* Door */
-      var door = BABYLON.Mesh.CreateBox("door", 1.0, scene);
-      door.isVisible = false;
-      door.position = new BABYLON.Vector3(35, -10, 26);
-      door.scaling = new BABYLON.Vector3(8, 8, 8);
-      door.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
-      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "toilet_door.obj", scene, function(newMeshes) {
-        for(i = 0; i < newMeshes.length; i++) {
-          newMeshes[i].parent = door;
-        }
-      })
-
-      /* Broom */
-      var broom = BABYLON.Mesh.CreateBox("broom", 1.0, scene);
-      broom.position = new BABYLON.Vector3(50, -9, 25);
-      broom.scaling = new BABYLON.Vector3(5, 5, 5);
-      broom.isVisible = false;
-      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "broom.obj", scene, function(newMeshes) {
-        for(i = 0; i < newMeshes.length; i++) {
-          newMeshes[i].parent = broom;
-        }
-      })
-
-      //Create physics engine
-      gravity = new BABYLON.Vector3(0, -9.81, 0);
-      physicsEngine = new BABYLON.CannonJSPlugin();
-      scene.enablePhysics(gravity, physicsEngine);
-
-      /* Walls */
-      var wallLight1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
-      // var wallLight2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(0, 1, -1), scene);
-      wall = BABYLON.MeshBuilder.CreateBox("wall", {height:20, width:50, depth: 0.5}, scene);
-      wall.position = new BABYLON.Vector3(30, 0, -14.3);
-      wall2 = BABYLON.MeshBuilder.CreateBox("wall2", {height:20, width:50, depth: 0.5}, scene);
-      wall2.position = new BABYLON.Vector3(30, 0, 26.3);
-      wall3 = BABYLON.MeshBuilder.CreateBox("wall3", {height:20, width:40, depth: 1}, scene);
-      wall3.position = new BABYLON.Vector3(55, 0, 6);
-      // rotate the 3rd wall(the front wall)
-      wall3.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
-
-      var wallMat = new BABYLON.StandardMaterial("bathroomMat", scene);
-      wallMat.diffuseTexture = new BABYLON.Texture("bathroomWall.jpg");
-      wall.material = wallMat;
-      wall2.material = wallMat;
-      wall3.material = wallMat;
-
-      /* Trashcan Mesh */
-      trashCan = new BABYLON.Mesh.CreateBox("trashCan", 1.0, scene);
-      trashCan.isVisible = false;
-      trashCan.position = new BABYLON.Vector3(40, -6, 5);
-      trashCan.scaling = new BABYLON.Vector3(5, 5, 5);
-      trashCan.physicsImpostor = new BABYLON.PhysicsImpostor(trashCan, BABYLON.PhysicsImpostor.BoxImpostor, 
-      {mass: 10000, restitution: 0.9, friction: 0.9}, scene);
-
-      /* Model for trashcan */
-      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Rubbish_Bin_By_Berken obj.obj", scene, function(newMeshes) {
-        for(i = 0; i < newMeshes.length; i++) {
-          newMeshes[i].parent = trashCan;
-        }
-      })
-
-      /* Trashcan Hitbox */
-      var hitBox = BABYLON.MeshBuilder.CreateBox("hitBox", {height: 5, width: 5, depth: 0.5}, scene);
-      hitBox.position = new BABYLON.Vector3(40, -2, 5);
-      hitBox.rotate(new BABYLON.Vector3(5, 0, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
-      hitBox.physicsImpostor = new BABYLON.PhysicsImpostor(hitBox,
-      BABYLON.PhysicsImpostor.BoxImpostor, {mass: 1000, restitution: 0.9, friction: 0.9}, scene);
-
-      wall.physicsImpostor = new BABYLON.PhysicsImpostor(wall, BABYLON.PhysicsImpostor.BoxImpostor,
-      {mass: 10000, restitution: 0.0, friction: 0.9}, scene);
-      wall2.physicsImpostor = new BABYLON.PhysicsImpostor(wall2, BABYLON.PhysicsImpostor.BoxImpostor,
-      {mass: 10000, restitution: 0.0, friction: 0.9}, scene);
-      wall3.physicsImpostor = new BABYLON.PhysicsImpostor(wall3, BABYLON.PhysicsImpostor.BoxImpostor,
-      {mass: 10000, restitution: 0.0, friction: 0.9}, scene);
-      
-      /* table for paper */
-      table = new BABYLON.Mesh.CreateGround("table", 5, 5, 1, scene);
-      table.position = new BABYLON.Vector3(3, 0, 5);
-      table.physicsImpostor = new BABYLON.PhysicsImpostor(table,
-      BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.2, friction: 0.2}, scene);
-
-      /* texture for table */
-      var tableMat = new BABYLON.StandardMaterial("tableMat", scene);
-      //Pilih aja yg bagus antara table.jpg table2.jpg table3.jpg
-      tableMat.diffuseTexture = new BABYLON.Texture("table3.jpg", scene);
-      table.material = tableMat;
-
-      /* floor */
-      floor = new BABYLON.Mesh.CreateGround("floor", 80, 60, 1, scene);
-      floor.position = new BABYLON.Vector3(30, -10, 6);
-      floor.physicImpostor = new BABYLON.PhysicsImpostor(floor, 
-      BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.7, friction: 0.5}, scene);
-
-      var floorMat = new BABYLON.StandardMaterial("floorMat", scene);
-      floorMat.diffuseTexture = new BABYLON.Texture("bathroomFloor.jpg", scene);
-      floor.material = floorMat;
-
-      /* Paper Mesh */
-      // paper = new BABYLON.MeshBuilder.CreateSphere("paper", {}, scene);
-      // paper.position = new BABYLON.Vector3(0, 0.5, 0);
-      thrown = false;
-      paper = new BABYLON.MeshBuilder.CreateSphere("paper", {}, scene);
-      paper.isVisible = false;
-      paper.position = new BABYLON.Vector3(3, 0.5, 5);
-      paper.scaling = new BABYLON.Vector3(0.75, 0.75, 0.75);
-      paper.physicsImpostor = new BABYLON.PhysicsImpostor(paper, BABYLON.PhysicsImpostor.BoxImpostor,
-      {mass: 1, restitution: 0.5, friction: 0.2}, scene);
-
-      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "untiene-garbage-papers.babylon", scene, function(newMeshes) {
-        for(i = 0; i < newMeshes.length; i++) {
-          newMeshes[i].parent = paper;
-        }
-      })
-
-      //create camera
-      camera = new BABYLON.ArcRotateCamera("Camera", Math.PI, Math.PI/2.5, 7, new BABYLON.Vector3(5, 0, 5), scene);
-      camera.attachControl(canvas, true);
-      // camera = new BABYLON.FollowCamera("followCam", new BABYLON.Vector3(0, 0, 0), scene);
-      // camera.radius = 10;
-      // camera.heightOffset = 5;
-      // camera.rotationOffset = 0;
-      // camera.cameraAcceleration = 0.005;
-      // camera.maxCameraSpeed = 10;
-      // camera.attachControl(canvas, true);
-      // camera.lockedTarget = table;
-
-      //Create light
-      var light = new BABYLON.HemisphericLight("hLight", new BABYLON.Vector3(0, 8, 0), scene);
-
-      /* Spacebar control to throw the paper */
-      power = 0;
-      powerY = 0;
-      window.onkeyup = window.onkeydown = function(evt) {
-          if(evt.keyCode == 32) {
-            done = false;
-            power += 3;
-            powerY += 0.5;
-        }
-        return false;
-      }
-      window.onkeyup = window.onkeyup = function(e) {
-        if(e.keyCode == 32) {
-          done = true;
-        }
-      }
-
-      /*Register collision between trashcan and the paper*/
-      paper.physicsImpostor.registerOnPhysicsCollide(trashCan.physicsImpostor, function(main, collided) {
-        thrown = true;
-        test += 2;
-        // console.log("Kena bro");
-        /*Point added*/
-      })
-      /* Registers collision between paper and the hitbox */
-      paper.physicsImpostor.registerOnPhysicsCollide(hitBox.physicsImpostor, function(main, collided) {
-        thrown = true;
-        console.log("Kena bro");
-      })
-      /* Registers collision between paper and the floor --> this doesn't work gatau kenapa */
-      paper.physicsImpostor.registerOnPhysicsCollide(floor.physicsImpostor, function(main, collided) {
-        thrown = true;
-      })
-
-      engine.runRenderLoop(function(){
-        // repositioning the paper on the table
-        if(thrown == true) {
-          setTimeout(function() {
-            thrown = false;
-            paper.position = new BABYLON.Vector3(3, 1, 5);
-          }, 8000);
-        }
-
-        if(done) {
-          paper.physicsImpostor.applyImpulse(new BABYLON.Vector3(power, powerY, 0), paper.getAbsolutePosition());
-          done = false;
-        }
-        done = false;
-        // isHolding = true;
-        scene.render();
-      });
-    });
-    </script>
-  </body>
-  </html>
+<body class="menu">
+	<h1>Lancio di Carta</h1>
+	<div class="container">
+		<img src="janitor_menu.jpg" class="image">
+		<a href="level1.html" target="_parent" role="button"><div class="overlay">
+			<div class="text">Janitor</div>
+		</div></a>
+	</div>
+	<div class="container">
+		<img src="intern_menu.png" class="image">
+		<a href="level2.html" target="_parent" role="button"><div class="overlay">
+			<div class="text">Intern</div>
+		</div></a>
+	</div>
+	<div class="container">
+		<img src="ceo_menu.jpg" class="image">
+		<a href="level3.html" target="_parent" role="button"><div class="overlay">
+			<div class="text">CEO</div>
+		</div></a>
+	</div>
+</body>
+</html>
