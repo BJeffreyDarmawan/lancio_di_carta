@@ -211,19 +211,10 @@
       floor.material = floorMat;
 
       /* Paper Mesh */
-      paper = new BABYLON.Mesh.CreateBox("paper", 1.0, scene);
-      thrown = false;
-      paper.isVisible = false;
-      paper.position = new BABYLON.Vector3(3, 0.5, 5);
-      paper.scaling = new BABYLON.Vector3(0.75, 0.75, 0.75);
-      paper.physicsImpostor = new BABYLON.PhysicsImpostor(paper, BABYLON.PhysicsImpostor.BoxImpostor,
-      {mass: 1, restitution: 0.5, friction: 0.2}, scene);
+      paper = createPaper(floor, hitBox, trashCan);
 
-      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "untiene-garbage-papers.babylon", scene, function(newMeshes) {
-        for(i = 0; i < newMeshes.length; i++) {
-          newMeshes[i].parent = paper;
-        }
-      })
+      thrown = false;
+
 
       //create camera
       camera = new BABYLON.ArcRotateCamera("Camera", Math.PI, Math.PI/2.5, 7, new BABYLON.Vector3(5, 0, 5), scene);
@@ -257,22 +248,7 @@
         }
       }
 
-      /*Register collision between trashcan and the paper*/
-      paper.physicsImpostor.registerOnPhysicsCollide(trashCan.physicsImpostor, function(main, collided) {
-        thrown = true;
-        // console.log("Kena bro");
-        /*Point added*/
-      })
-      /* Registers collision between paper and the hitbox */
-      paper.physicsImpostor.registerOnPhysicsCollide(hitBox.physicsImpostor, function(main, collided) {
-        thrown = true;
-        goal = true;
-        console.log("Kena bro");
-      })
-      /* Registers collision between paper and the floor --> this doesn't work gatau kenapa */
-      paper.physicsImpostor.registerOnPhysicsCollide(floor.physicsImpostor, function(main, collided) {
-        thrown = true;
-      })
+      
 
       engine.runRenderLoop(function(){
         // make the cart moves
@@ -309,6 +285,86 @@
         }
         scene.render();
       });
+
+      function registerFloorCollision(kertas, lantai, target, kotaksampah){
+      /* Registers collision between paper and the floor --> this doesn't work gatau kenapa */
+      kertas.physicsImpostor.registerOnPhysicsCollide(lantai.physicsImpostor, function(main, collided) {
+        console.log(thrown); // second paper ga masuk ke sini... // third time cuman sampe sini
+        if(thrown){console.log("WOI");
+          thrown = false;
+          powerY = 0;
+          power = 0;
+          var boo = new BABYLON.Sound("boo", "Crowd Boo 3-SoundBible.com-595364990.wav", scene, null, {loop: false, autoplay:true});
+          setTimeout(function(){ 
+            paper = createPaper(lantai, target, kotaksampah);
+             
+          }, 2000);
+          // console.log(thrown);
+          // console.log(done);
+        }
+      })
+    }
+
+    function registerHitBoxCollision(kertas, lantai, target, kotaksampah){
+      /* Registers collision between paper and the hitbox */
+      kertas.physicsImpostor.registerOnPhysicsCollide(target.physicsImpostor, function(main, collided) {
+        if(thrown){
+          console.log("point+");
+          thrown = false;
+          power = 0;
+          powerY = 0;
+          paper.dispose();
+          var applause = new BABYLON.Sound("applause", "applause-2.wav", scene, null, {loop: false, autoplay:true});
+          //point++;
+
+          setTimeout(function(){
+            paper = createPaper(lantai, target, kotaksampah);
+            // var newPos = Math.floor((Math.random() * (75 - 30) + 30));
+            // kotaksampah.position = new BABYLON.Vector3(newPos, -6, 5);
+            // target.position = new BABYLON.Vector3(newPos, -2, 5);
+          }, 2000);
+          // console.log(thrown);
+          // console.log(done);
+        }
+      })      
+    }
+
+    function registerTrashCanCollision(kertas, lantai, target, kotaksampah){
+      /*Register collision between trashcan and the paper*/
+      kertas.physicsImpostor.registerOnPhysicsCollide(kotaksampah.physicsImpostor, function(main, collided) {
+        if(thrown){
+          thrown = false;
+          powerY = 0;
+          power = 0;
+          var boo = new BABYLON.Sound("boo", "Crowd Boo 3-SoundBible.com-595364990.wav", scene, null, {loop: false, autoplay:true});
+          setTimeout(function(){ 
+            paper = createPaper(lantai, target, kotaksampah); 
+            //yak, jadi kalo gw createPaper() gini, dia ga ke apply phisics impostornya(?? harusnya sih keapply, soalnya kan applynya udah di dlm functionnya) or idk, somehow registerOnCollidenya ga ke trigger 
+          }, 2000);
+          // console.log(thrown);
+          // console.log(done);
+        }
+      })
+    }
+
+    function registerMejaCollision(kertas, lantai, target, kotaksampah){
+      /*Register collision between trashcan and the paper*/
+      kertas.physicsImpostor.registerOnPhysicsCollide(table.physicsImpostor, function(main, collided) {
+        if(thrown){
+          thrown = false;
+          powerY = 0;
+          power = 0;
+          setTimeout(function(){ 
+            paper = createPaper(lantai, target, kotaksampah); 
+            //yak, jadi kalo gw createPaper() gini, dia ga ke apply phisics impostornya(?? harusnya sih keapply, soalnya kan applynya udah di dlm functionnya) or idk, somehow registerOnCollidenya ga ke trigger 
+          }, 2000);
+          // console.log(thrown);
+          // console.log(done);
+        }
+      })
+    }
+
+      
     });
     </script>
   </body>
