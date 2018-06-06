@@ -24,7 +24,8 @@
       /* Sink */
       var sink = BABYLON.Mesh.CreateBox("sink", 1.0, scene);
       sink.position = new BABYLON.Vector3(30, -5, -11);
-      sink.scaling = new BABYLON.Vector3(0.35, 0.35, 0.35);
+      sink.isVisible = false;
+      sink.scaling = new BABYLON.Vector3(3, 3, 3);
       BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Sink.obj", scene, function(newMeshes) {
         for(i = 0; i < newMeshes.length; i++) {
           newMeshes[i].parent = sink;
@@ -47,10 +48,11 @@
 
       /* Door */
       var door = BABYLON.Mesh.CreateBox("door", 1.0, scene);
+      door.isVisible = false;
       door.position = new BABYLON.Vector3(35, -10, 26);
-      door.scaling = new BABYLON.Vector3(0.01, 1/110, 0.01);
+      door.scaling = new BABYLON.Vector3(8, 8, 8);
       door.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
-      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "frise11_z_.obj", scene, function(newMeshes) {
+      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "toilet_door.obj", scene, function(newMeshes) {
         for(i = 0; i < newMeshes.length; i++) {
           newMeshes[i].parent = door;
         }
@@ -58,7 +60,9 @@
 
       /* Broom */
       var broom = BABYLON.Mesh.CreateBox("broom", 1.0, scene);
-      broom.position = new BABYLON.Vector3(60, -9, 26);
+      broom.position = new BABYLON.Vector3(50, -9, 25);
+      broom.scaling = new BABYLON.Vector3(5, 5, 5);
+      broom.isVisible = false;
       BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "broom.obj", scene, function(newMeshes) {
         for(i = 0; i < newMeshes.length; i++) {
           newMeshes[i].parent = broom;

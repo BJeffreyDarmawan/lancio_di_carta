@@ -23,9 +23,10 @@
 
      /* Desk */
      var desk = BABYLON.Mesh.CreateBox("desk", 1.0, scene);
-     desk.position = new BABYLON.Vector3(42, -10, 35);
+     desk.position = new BABYLON.Vector3(42, -11, 35);
      desk.scaling = new BABYLON.Vector3(6, 6, 6);
      desk.isVisible = false;
+     desk.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(180).radians(), BABYLON.Space.LOCAL);
      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Gaming Desk.obj", scene, function(newMeshes) {
         for(i = 0; i < newMeshes.length; i++) {
           newMeshes[i].parent = desk;
@@ -44,22 +45,22 @@
       })
 
      var desk3 = BABYLON.Mesh.CreateBox("desk3", 1.0, scene);
-     desk3.position = new BABYLON.Vector3(70, -10, 25);
-     desk3.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
+     desk3.position = new BABYLON.Vector3(72, -11, 35);
+     desk3.scaling = new BABYLON.Vector3(6, 6, 6);
      desk3.isVisible = false;
      desk3.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(180).radians(), BABYLON.Space.LOCAL);
-     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Table_chair_senor_obj.obj", scene, function(newMeshes) {
+     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Gaming Desk.obj", scene, function(newMeshes) {
         for(i = 0; i < newMeshes.length; i++) {
           newMeshes[i].parent = desk3;
         }
       })
 
      var desk4 = BABYLON.Mesh.CreateBox("desk4", 1.0, scene);
-     desk4.position = new BABYLON.Vector3(70, -10, -16);
-     desk4.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
+     desk4.position = new BABYLON.Vector3(69, -10, -30);
+     desk4.scaling = new BABYLON.Vector3(8, 12, 8);
      desk4.isVisible = false;
-     // desk4.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(180).radians(), BABYLON.Space.LOCAL);
-     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Table_chair_senor_obj.obj", scene, function(newMeshes) {
+     desk4.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
+     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Metal Desk.obj", scene, function(newMeshes) {
         for(i = 0; i < newMeshes.length; i++) {
           newMeshes[i].parent = desk4;
         }
@@ -69,7 +70,7 @@
      var chair = BABYLON.Mesh.CreateBox("chair", 1.0, scene);
      chair.position = new BABYLON.Vector3(42, -10, 25);
      chair.isVisible = false;
-     chair.scaling = new BABYLON.Vector3(0.5, 0.5, 0.5);
+     chair.scaling = new BABYLON.Vector3(5, 5, 5);
      chair.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(180).radians(), BABYLON.Space.LOCAL);
      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Chair.obj", scene, function(newMeshes) {
         for(i = 0; i < newMeshes.length; i++) {
@@ -85,6 +86,28 @@
      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "office_chair.obj", scene, function(newMeshes) {
         for(i = 0; i < newMeshes.length; i++) {
           newMeshes[i].parent = chair2;
+        }
+      })
+
+     var chair3 = BABYLON.Mesh.CreateBox("chair3", 1.0, scene);
+     chair3.position = new BABYLON.Vector3(72, -10, 25);
+     chair3.isVisible = false;
+     chair3.scaling = new BABYLON.Vector3(5, 5, 5);
+     chair3.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(180).radians(), BABYLON.Space.LOCAL);
+     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Chair.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = chair3;
+        }
+      })
+
+     var chair4 = BABYLON.Mesh.CreateBox("chair4", 1.0, scene);
+     chair4.position = new BABYLON.Vector3(72, -10, -15);
+     chair4.isVisible = false;
+     chair4.scaling = new BABYLON.Vector3(5, 5, 5);
+     chair4.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(180).radians(), BABYLON.Space.LOCAL);
+     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "office_chair.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = chair4;
         }
       })
 

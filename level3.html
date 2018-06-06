@@ -9,7 +9,7 @@
 <body>
   <canvas id = "renderCanvas"></canvas>
   <script>
-    var canvas, engine, scene, camera, gravity, table, box, box2, isHolding, paper, targetX, targetZ, wall, wall2, wall3, power, powerY, done, thrown, goal;
+    var canvas, engine, scene, camera, gravity, table, box, box2, isHolding, paper, targetX, targetZ, wall, wall2, wall3, power, powerY, done, thrown, goal, cart;
     document.addEventListener("DOMContentLoaded", function(){
       //initScene();
       //Get canvas
@@ -33,9 +33,86 @@
         }
       })
 
-     /* Chair */
+     /* Book */
+     var book = BABYLON.Mesh.CreateBox("book", 1.0, scene);
+     book.isVisible = false;
+     book.position = new BABYLON.Vector3(65, 1, -8);
+     book.rotate(new BABYLON.Vector3(5, 0, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
+     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Book_by_Peter_Iliev_obj.obj", scene, function(newMeshes) {
+      for(i = 0; i < newMeshes.length; i++) {
+        newMeshes[i].parent = book;
+      }
+     })
 
-     /* Clock */
+     /* Cup */
+     var cup = BABYLON.Mesh.CreateBox("cup", 1.0, scene);
+     cup.position = new BABYLON.Vector3(40, -2, -22);
+     cup.scaling = new BABYLON.Vector3(1/32, 1/32, 1/32);
+     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "coffeMug1_free_obj.obj", scene, function(newMeshes) {
+      for(i = 0; i < newMeshes.length; i++) {
+        newMeshes[i].parent = cup;
+      }
+     })
+
+     /* Book Shelf */
+     var bookshelf = BABYLON.Mesh.CreateBox("bookshelf", 1.0, scene);
+     bookshelf.isVisible = false;
+     bookshelf.scaling = new BABYLON.Vector3(3, 3, 3);
+     bookshelf.position = new BABYLON.Vector3(52, -10, 30);
+     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "BOOKS OBJ.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = bookshelf;
+        }
+      })
+
+     /* Sofa */
+     var sofa = BABYLON.Mesh.CreateBox("sofa", 1.0, scene);
+     sofa.isVisible = false;
+     sofa.scaling = new BABYLON.Vector3(3, 3, 3);
+     sofa.position = new BABYLON.Vector3(32, -10, 30);
+     sofa.scaling = new BABYLON.Vector3(1/100, 1/100, 1/100);
+     sofa.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(180).radians(), BABYLON.Space.LOCAL);
+     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Sofa collection.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = sofa;
+        }
+      })
+
+     /* Stationery */
+     var stationery = BABYLON.Mesh.CreateBox("stationery", 1.0, scene);
+     stationery.isVisible = false;
+     stationery.scaling = new BABYLON.Vector3(3, 3, 3);
+     stationery.position = new BABYLON.Vector3(35, -2, -22);
+     stationery.scaling = new BABYLON.Vector3(1/6, 1/6, 1/6);
+     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "colorful-pencils.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = stationery;
+        }
+      })
+
+     /* Laptop */
+     var laptop = BABYLON.Mesh.CreateBox("laptop", 1.0, scene);
+     laptop.isVisible = false;
+     // laptop.scaling = new BABYLON.Vector3(3, 3, 3);
+     laptop.position = new BABYLON.Vector3(45, -2, -22);
+     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Laptop 11.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = laptop;
+        }
+      })
+
+     /* Chair */
+     var chair2 = BABYLON.Mesh.CreateBox("chair2", 1.0, scene);
+     chair2.position = new BABYLON.Vector3(42, -10, -13);
+     chair2.isVisible = false;
+     chair2.scaling = new BABYLON.Vector3(6, 6, 6);
+     chair2.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(180).radians(), BABYLON.Space.LOCAL);
+     BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "office_chair.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = chair2;
+        }
+      })
+
 
       //Create physics engine
       gravity = new BABYLON.Vector3(0, -9.81, 0);
@@ -60,36 +137,35 @@
       wall2.material = mainWall;
 
       var frontWall = new BABYLON.StandardMaterial("frontWall", scene);
-      frontWall.diffuseTexture = new BABYLON.Texture("front_wall.jpg");
+      frontWall.diffuseTexture = new BABYLON.Texture("window.jpg");
       wall3.material = frontWall;
+
+      /* Cart */
+      cart = new BABYLON.Mesh.CreateBox("cart", 1.0, scene);
+      cart.position = new BABYLON.Vector3(30, -6, 5);
+      cart.scaling = new BABYLON.Vector3(5, 5, 5);
+      cart.physicsImpostor = new BABYLON.PhysicsImpostor(cart, BABYLON.PhysicsImpostor.BoxImpostor, 
+      {mass: 10000, restitution: 0.9, friction: 0.9}, scene);
 
       /* Trashcan Mesh */
       trashCan = new BABYLON.Mesh.CreateBox("trashCan", 1.0, scene);
-      // var temp = new BABYLON.Mesh.CreateBox("temp", 1.0, scene);
-      // temp.scaling = new BABYLON.Vector3(5, 5, 5);
-      // temp.position = new BABYLON.Vector3(30, -7, 15);
-      // trashCan.isVisible = false;
-      trashCan.position = new BABYLON.Vector3(30, -6, 5);
-      trashCan.scaling = new BABYLON.Vector3(5, 5, 5);
+      trashCan.isVisible = false;
+      trashCan.position = new BABYLON.Vector3(30, 0, 5);
+      trashCan.scaling = new BABYLON.Vector3(10, 10, 10);
+      trashCan.rotate(new BABYLON.Vector3(0, -5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
       trashCan.physicsImpostor = new BABYLON.PhysicsImpostor(trashCan, BABYLON.PhysicsImpostor.BoxImpostor, 
       {mass: 10000, restitution: 0.9, friction: 0.9}, scene);
-
-      /*Temporary material for trash can -DELETE LATER-*/
-      var temp = new BABYLON.StandardMaterial("temp", scene);
-      temp.diffuseColor = new BABYLON.Color3(1, 0, 0);
-      temp.specularColor = new BABYLON.Color3(0, 1, 0);
-      trashCan.material = temp;
-
       /* Model for trashcan */
-      // BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "trash_can.obj", scene, function(newMeshes) {
-      //   for(i = 0; i < newMeshes.length; i++) {
-      //     newMeshes[i].parent = trashCan;
-      //   }
-      // })
+      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Rubbish_Bin_By_Berken obj.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = trashCan;
+        }
+      })
 
       /* Trashcan Hitbox */
       var hitBox = BABYLON.MeshBuilder.CreateBox("hitBox", {height: 5, width: 5, depth: 0.5}, scene);
-      hitBox.position = new BABYLON.Vector3(30, -2, 5);
+      // hitBox.isVisible = false;
+      hitBox.position = new BABYLON.Vector3(30, 0, 5);
       hitBox.rotate(new BABYLON.Vector3(5, 0, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
       hitBox.physicsImpostor = new BABYLON.PhysicsImpostor(hitBox,
       BABYLON.PhysicsImpostor.BoxImpostor, {mass: 1000, restitution: 0.9, friction: 0.9}, scene);
@@ -120,7 +196,7 @@
       BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.7, friction: 0.5}, scene);
 
       var floorMat = new BABYLON.StandardMaterial("floorMat", scene);
-      floorMat.diffuseTexture = new BABYLON.Texture("floor.jpg", scene);
+      floorMat.diffuseTexture = new BABYLON.Texture("carpet.jpg", scene);
       floor.material = floorMat;
 
       /* Paper Mesh */
