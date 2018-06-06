@@ -10,6 +10,7 @@
   <canvas id = "renderCanvas"></canvas>
   <script>
     var canvas, engine, scene, camera, gravity, table, box, box2, isHolding, paper, targetX, targetZ, wall, wall2, wall3, power, powerY, done, thrown, goal, cart;
+    var t = 0;
     document.addEventListener("DOMContentLoaded", function(){
       //initScene();
       //Get canvas
@@ -126,7 +127,7 @@
       wall.position = new BABYLON.Vector3(40, 5, -24.3);
       wall2 = BABYLON.MeshBuilder.CreateBox("wall2", {height:30, width:75, depth: 0.5}, scene);
       wall2.position = new BABYLON.Vector3(40, 5, 36.3);
-      wall3 = BABYLON.MeshBuilder.CreateBox("wall3", {height:30, width:80, depth: 0.5}, scene);
+      wall3 = BABYLON.MeshBuilder.CreateBox("wall3", {height:30, width:80, depth: 1}, scene);
       wall3.position = new BABYLON.Vector3(78, 5, 6);
       // rotate the 3rd wall(the front wall)
       wall3.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
@@ -142,19 +143,26 @@
 
       /* Cart */
       cart = new BABYLON.Mesh.CreateBox("cart", 1.0, scene);
-      cart.position = new BABYLON.Vector3(30, -6, 5);
-      cart.scaling = new BABYLON.Vector3(5, 5, 5);
+      cart.isVisible = false;
+      cart.position = new BABYLON.Vector3(30, -8, 5);
+      cart.scaling = new BABYLON.Vector3(2, 2, 2);
+      cart.rotate(new BABYLON.Vector3(0, -5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
       cart.physicsImpostor = new BABYLON.PhysicsImpostor(cart, BABYLON.PhysicsImpostor.BoxImpostor, 
-      {mass: 10000, restitution: 0.9, friction: 0.9}, scene);
+      {mass: 1000, restitution: 0.9, friction: 0.9}, scene);
+      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Cart.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = cart;
+        }
+      })
 
       /* Trashcan Mesh */
       trashCan = new BABYLON.Mesh.CreateBox("trashCan", 1.0, scene);
       trashCan.isVisible = false;
-      trashCan.position = new BABYLON.Vector3(30, 0, 5);
-      trashCan.scaling = new BABYLON.Vector3(10, 10, 10);
+      trashCan.position = new BABYLON.Vector3(30, -6, 5);
+      trashCan.scaling = new BABYLON.Vector3(3, 3, 3);
       trashCan.rotate(new BABYLON.Vector3(0, -5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
       trashCan.physicsImpostor = new BABYLON.PhysicsImpostor(trashCan, BABYLON.PhysicsImpostor.BoxImpostor, 
-      {mass: 10000, restitution: 0.9, friction: 0.9}, scene);
+      {mass: 1000, restitution: 0.9, friction: 0.9}, scene);
       /* Model for trashcan */
       BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Rubbish_Bin_By_Berken obj.obj", scene, function(newMeshes) {
         for(i = 0; i < newMeshes.length; i++) {
@@ -163,12 +171,12 @@
       })
 
       /* Trashcan Hitbox */
-      var hitBox = BABYLON.MeshBuilder.CreateBox("hitBox", {height: 5, width: 5, depth: 0.5}, scene);
+      var hitBox = BABYLON.MeshBuilder.CreateBox("hitBox", {height: 3, width: 3, depth: 0.5}, scene);
       // hitBox.isVisible = false;
-      hitBox.position = new BABYLON.Vector3(30, 0, 5);
+      hitBox.position = new BABYLON.Vector3(30, -4, 5);
       hitBox.rotate(new BABYLON.Vector3(5, 0, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
       hitBox.physicsImpostor = new BABYLON.PhysicsImpostor(hitBox,
-      BABYLON.PhysicsImpostor.BoxImpostor, {mass: 1000, restitution: 0.9, friction: 0.9}, scene);
+      BABYLON.PhysicsImpostor.BoxImpostor, {mass: 1000, restitution: 0.9, friction: 1}, scene);
 
       wall.physicsImpostor = new BABYLON.PhysicsImpostor(wall, BABYLON.PhysicsImpostor.BoxImpostor,
       {mass: 10000, restitution: 0.0, friction: 0.9}, scene);
@@ -179,6 +187,7 @@
       
       /* table for paper */
       table = new BABYLON.Mesh.CreateGround("table", 5, 5, 1, scene);
+      table.isVisible = false;
       table.position = new BABYLON.Vector3(3, 0, 5);
       table.physicsImpostor = new BABYLON.PhysicsImpostor(table,
       BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.2, friction: 0.2}, scene);
@@ -200,10 +209,8 @@
       floor.material = floorMat;
 
       /* Paper Mesh */
-      // paper = new BABYLON.MeshBuilder.CreateSphere("paper", {}, scene);
-      // paper.position = new BABYLON.Vector3(0, 0.5, 0);
-      thrown = false;
       paper = new BABYLON.MeshBuilder.CreateSphere("paper", {}, scene);
+      thrown = false;
       paper.isVisible = false;
       paper.position = new BABYLON.Vector3(3, 0.5, 5);
       paper.scaling = new BABYLON.Vector3(0.75, 0.75, 0.75);
@@ -233,13 +240,6 @@
 
 
       /* Spacebar control to throw the paper */
-      targetX = trashCan.position.x;
-      targetZ = trashCan.position.z;
-      // window.onkeyup = window.onkeydown = function(e) {
-      //   if(e.keyCode == 32) {
-      //     isHolding = e.type == 'keydown';
-      //   }
-      // }
       power = 0;
       window.onkeyup = window.onkeydown = function(evt) {
           if(evt.keyCode == 32) {
@@ -273,6 +273,12 @@
       })
 
       engine.runRenderLoop(function(){
+        // make the cart moves
+        t -= 1;
+        cart.position.x = 20 * Math.sin(t * 0.01) + 35;
+        trashCan.position.x = 20 * Math.sin(t * 0.01) + 35;
+        hitBox.position.x = 20 * Math.sin(t * 0.01) + 35;
+
         // repositioning the paper on the table
         if(thrown == true) {
           setTimeout(function() {

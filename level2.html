@@ -123,7 +123,7 @@
       wall.position = new BABYLON.Vector3(40, 5, -30);
       wall2 = BABYLON.MeshBuilder.CreateBox("wall2", {height:30, width:75, depth: 0.5}, scene);
       wall2.position = new BABYLON.Vector3(40, 5, 41.3);
-      wall3 = BABYLON.MeshBuilder.CreateBox("wall3", {height:30, width:80, depth: 0.5}, scene);
+      wall3 = BABYLON.MeshBuilder.CreateBox("wall3", {height:30, width:80, depth: 1}, scene);
       wall3.position = new BABYLON.Vector3(78, 5, 6);
       // rotate the 3rd wall(the front wall)
       wall3.rotate(new BABYLON.Vector3(0, 5, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
@@ -160,9 +160,6 @@
 
       /* Trashcan Mesh */
       trashCan = new BABYLON.Mesh.CreateBox("trashCan", 1.0, scene);
-      // var temp = new BABYLON.Mesh.CreateBox("temp", 1.0, scene);
-      // temp.scaling = new BABYLON.Vector3(5, 5, 5);
-      // temp.position = new BABYLON.Vector3(30, -7, 15);
       // trashCan.isVisible = false;
       trashCan.position = new BABYLON.Vector3(30, -6, 5);
       trashCan.scaling = new BABYLON.Vector3(5, 5, 5);
@@ -171,24 +168,19 @@
           mass: 10000, 
           restitution: 0.9, 
           friction: 0.9
-        }, scene);
-
-      /*Temporary material for trash can -DELETE LATER-*/
-      var temp = new BABYLON.StandardMaterial("temp", scene);
-      temp.diffuseColor = new BABYLON.Color3(1, 0, 0);
-      temp.specularColor = new BABYLON.Color3(0, 1, 0);
-      trashCan.material = temp;
+        }, scene)
 
       /* Model for trashcan */
-      // BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "trash_can.obj", scene, function(newMeshes) {
-      //   for(i = 0; i < newMeshes.length; i++) {
-      //     newMeshes[i].parent = trashCan;
-      //   }
-      // })
+      BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "Rubbish_Bin_By_Berken obj.obj", scene, function(newMeshes) {
+        for(i = 0; i < newMeshes.length; i++) {
+          newMeshes[i].parent = trashCan;
+        }
+      })
 
       /* Trashcan Hitbox */
-      var hitBox = BABYLON.MeshBuilder.CreateBox("hitBox", {height: 5, width: 5, depth: 0.1}, scene);
-      hitBox.position = new BABYLON.Vector3(30, -2, 5);
+      var hitBox = BABYLON.MeshBuilder.CreateBox("hitBox", {height: 6, width: 6, depth: 0.1}, scene);
+      hitBox.position = new BABYLON.Vector3(30, 2, 5);
+      // hitBox.isVisible = false;
       hitBox.rotate(new BABYLON.Vector3(5, 0, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
       hitBox.physicsImpostor = new BABYLON.PhysicsImpostor(hitBox,
       BABYLON.PhysicsImpostor.BoxImpostor, {mass: 1000, restitution: 0.9, friction: 0.9}, scene);
@@ -202,6 +194,7 @@
       
       /* table for paper */
       table = new BABYLON.Mesh.CreateGround("table", 5, 5, 1, scene);
+      table.isVisible = false;
       table.position = new BABYLON.Vector3(3, 0, 5);
       table.physicsImpostor = new BABYLON.PhysicsImpostor(table,
       BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.2, friction: 0.2}, scene);
@@ -246,19 +239,13 @@
 
 
       /* Spacebar control to throw the paper */
-      targetX = trashCan.position.x;
-      targetZ = trashCan.position.z;
-      // window.onkeyup = window.onkeydown = function(e) {
-      //   if(e.keyCode == 32) {
-      //     isHolding = e.type == 'keydown';
-      //   }
-      // }
       power = 0;
+      powerY = 0;
       window.onkeyup = window.onkeydown = function(evt) {
           if(evt.keyCode == 32) {
             done = false;
             power += 3;
-            powerY += 0.4;
+            powerY += 0.5;
         }
         return false;
       }
@@ -267,11 +254,6 @@
           done = true;
         }
       }
-
-      
-      
-
-      
 
       engine.runRenderLoop(function(){
         // repositioning the paper on the table
@@ -284,7 +266,8 @@
         // }
 
         // apply impulse upon spacebar release
-        if(done && !thrown) {console.log("spacebar touched")
+        if(done && !thrown) {
+          console.log("spacebar touched");
           paper.physicsImpostor.applyImpulse(new BABYLON.Vector3(power, powerY, 0), paper.getAbsolutePosition());
           done = false;
           thrown = true;
@@ -298,7 +281,7 @@
         //   var newPos = Math.floor((Math.random() * (75 - 30) + 30));
         //   setTimeout(function() {
         //     trashCan.position = new BABYLON.Vector3(newPos, -6, 5);
-        //     hitBox.position = new BABYLON.Vector3(newPos, -2, 5)
+        //     hitBox.position = new BABYLON.Vector3(newPos, -2, 5);
         //   }, 8000);
         //   // console.log(newPos);
         //   goal = false;
@@ -315,6 +298,10 @@
       kertas.scaling = new BABYLON.Vector3(0.75, 0.75, 0.75);
       kertas.physicsImpostor = new BABYLON.PhysicsImpostor(kertas, BABYLON.PhysicsImpostor.BoxImpostor,
       {mass: 1, restitution: 0.5, friction: 0.2}, scene);
+
+      var newPos = Math.floor((Math.random() * (75 - 30) + 30));
+      kotaksampah.position = new BABYLON.Vector3(newPos, -6, 5);
+      target.position = new BABYLON.Vector3(newPos, -2, 5);
 
       BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "untiene-garbage-papers.babylon", scene, function(newMeshes) {
         for(i = 0; i < newMeshes.length; i++) {
@@ -340,8 +327,9 @@
           thrown = false;
           powerY = 0;
           power = 0;
+          var boo = new BABYLON.Sound("boo", "Crowd Boo 3-SoundBible.com-595364990.wav", scene, null, {loop: false, autoplay:true});
           setTimeout(function(){ 
-            paper = createPaper(lantai, target, kotaksampah); 
+            paper = createPaper(lantai, target, kotaksampah);
             //yak, jadi kalo gw createPaper() gini, dia ga ke apply phisics impostornya(?? harusnya sih keapply, soalnya kan applynya udah di dlm functionnya) or idk, somehow registerOnCollidenya ga ke trigger 
           }, 2000);
           // console.log(thrown);
@@ -358,12 +346,13 @@
           thrown = false;
           power = 0;
           powerY = 0;
+          var applause = new BABYLON.Sound("applause", "applause-2.wav", scene, null, {loop: false, autoplay:true});
           //point++;
-          setTimeout( function(){
+          setTimeout(function(){
             paper = createPaper(lantai, target, kotaksampah);
-            var newPos = Math.floor((Math.random() * (75 - 30) + 30));
-            kotaksampah.position = new BABYLON.Vector3(newPos, -6, 5);
-            target.position = new BABYLON.Vector3(newPos, -2, 5);
+            // var newPos = Math.floor((Math.random() * (75 - 30) + 30));
+            // kotaksampah.position = new BABYLON.Vector3(newPos, -6, 5);
+            // target.position = new BABYLON.Vector3(newPos, -2, 5);
           }, 2000);
           // console.log(thrown);
           // console.log(done);
@@ -378,6 +367,7 @@
           thrown = false;
           powerY = 0;
           power = 0;
+          var boo = new BABYLON.Sound("boo", "Crowd Boo 3-SoundBible.com-595364990.wav", scene, null, {loop: false, autoplay:true});
           setTimeout(function(){ 
             paper = createPaper(lantai, target, kotaksampah); 
             //yak, jadi kalo gw createPaper() gini, dia ga ke apply phisics impostornya(?? harusnya sih keapply, soalnya kan applynya udah di dlm functionnya) or idk, somehow registerOnCollidenya ga ke trigger 
