@@ -8,10 +8,10 @@
   <!-- <script type="text/javascript" src="initScene.js"></script> -->
 </head>
 <body>
-  <a href="index.html" class="btn-success">Back</a>
+  <a href="index.html" class="btn-success btn-lg">Back</a>
   <canvas id = "renderCanvas"></canvas>
   <script>
-    var canvas, engine, scene, camera, gravity, table, box, box2, isHolding, paper, targetX, targetZ, wall, wall2, wall3, power, powerY, done, thrown, goal;
+    var canvas, engine, scene, camera, gravity, table, box, box2, isHolding, paper, targetX, targetZ, wall, wall2, wall3, power, powerY, done, thrown, goal, points = 0, txtPoints;
     document.addEventListener("DOMContentLoaded", function(){
       //initScene();
       //Get canvas
@@ -230,6 +230,8 @@
       //Create light
       var light = new BABYLON.HemisphericLight("hLight", new BABYLON.Vector3(0, 8, 0), scene);
 
+      // display points
+      displayPoints();
 
       /* Spacebar control to throw the paper */
       power = 0;
@@ -266,19 +268,7 @@
           thrown = true;
           console.log("thrown"+thrown);
         }
-        // done = false;
-        // isHolding = true;
-
-        /* Randomize number for the trashcan placement(x between 30 = 75) */
-        // if(goal) {
-        //   var newPos = Math.floor((Math.random() * (75 - 30) + 30));
-        //   setTimeout(function() {
-        //     trashCan.position = new BABYLON.Vector3(newPos, -6, 5);
-        //     hitBox.position = new BABYLON.Vector3(newPos, -2, 5);
-        //   }, 8000);
-        //   // console.log(newPos);
-        //   goal = false;
-        // }
+        
         scene.render();
       });
     });
@@ -313,20 +303,22 @@
     }
 
     function registerFloorCollision(kertas, lantai, target, kotaksampah){
-      /* Registers collision between paper and the floor --> this doesn't work gatau kenapa */
+      /* Registers collision between paper and the floor */
       kertas.physicsImpostor.registerOnPhysicsCollide(lantai.physicsImpostor, function(main, collided) {
-        console.log(thrown); // second paper ga masuk ke sini...
+        console.log("homo");
         if(thrown){
           thrown = false;
           powerY = 0;
           power = 0;
+          points = 0;
+          txtPoints.text = "Points: " + points;
+          kertas.physicsImpostor.unregisterOnPhysicsCollide(lantai.physicsImpostor);
           var boo = new BABYLON.Sound("boo", "Crowd Boo 3-SoundBible.com-595364990.wav", scene, null, {loop: false, autoplay:true});
           setTimeout(function(){ 
+
             paper = createPaper(lantai, target, kotaksampah);
-            //yak, jadi kalo gw createPaper() gini, dia ga ke apply phisics impostornya(?? harusnya sih keapply, soalnya kan applynya udah di dlm functionnya) or idk, somehow registerOnCollidenya ga ke trigger 
+            
           }, 2000);
-          // console.log(thrown);
-          // console.log(done);
         }
       })
     }
@@ -339,13 +331,17 @@
           thrown = false;
           power = 0;
           powerY = 0;
+          points += 1;
+          txtPoints.text = "Points: " + points;
+          kertas.physicsImpostor.unregisterOnPhysicsCollide(lantai.physicsImpostor);
+
+          kertas.setEnabled(false);
+
           var applause = new BABYLON.Sound("applause", "applause-2.wav", scene, null, {loop: false, autoplay:true});
-          //point++;
+          
           setTimeout(function(){
             paper = createPaper(lantai, target, kotaksampah);
-            // var newPos = Math.floor((Math.random() * (75 - 30) + 30));
-            // kotaksampah.position = new BABYLON.Vector3(newPos, -6, 5);
-            // target.position = new BABYLON.Vector3(newPos, -2, 5);
+            
           }, 2000);
           // console.log(thrown);
           // console.log(done);
@@ -360,13 +356,16 @@
           thrown = false;
           powerY = 0;
           power = 0;
+          points = 0;
+          txtPoints.text = "Points: " + points;
+          kertas.physicsImpostor.unregisterOnPhysicsCollide(lantai.physicsImpostor);
+
           var boo = new BABYLON.Sound("boo", "Crowd Boo 3-SoundBible.com-595364990.wav", scene, null, {loop: false, autoplay:true});
           setTimeout(function(){ 
             paper = createPaper(lantai, target, kotaksampah); 
-            //yak, jadi kalo gw createPaper() gini, dia ga ke apply phisics impostornya(?? harusnya sih keapply, soalnya kan applynya udah di dlm functionnya) or idk, somehow registerOnCollidenya ga ke trigger 
+             
           }, 2000);
-          // console.log(thrown);
-          // console.log(done);
+          
         }
       })
     }
@@ -374,18 +373,36 @@
     function registerMejaCollision(kertas, lantai, target, kotaksampah){
       /*Register collision between trashcan and the paper*/
       kertas.physicsImpostor.registerOnPhysicsCollide(table.physicsImpostor, function(main, collided) {
+
         if(thrown){
           thrown = false;
           powerY = 0;
           power = 0;
+          points = 0;
+          txtPoints.text = "Points: " + points;
+          kertas.physicsImpostor.unregisterOnPhysicsCollide(lantai.physicsImpostor);
+
+
           setTimeout(function(){ 
             paper = createPaper(lantai, target, kotaksampah); 
-            //yak, jadi kalo gw createPaper() gini, dia ga ke apply phisics impostornya(?? harusnya sih keapply, soalnya kan applynya udah di dlm functionnya) or idk, somehow registerOnCollidenya ga ke trigger 
+            kertas.setEnabled(false);
           }, 2000);
-          // console.log(thrown);
-          // console.log(done);
+          
         }
       })
+    }
+
+    function displayPoints() {
+      var frame = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("frame");
+
+      txtPoints = new BABYLON.GUI.TextBlock();
+      txtPoints.text = "Points: " + points;
+      txtPoints.color = "black";
+      txtPoints.fontSize = 24;
+      txtPoints.left = "-1%";
+      txtPoints.top = '-45%';
+
+      frame.addControl(txtPoints);
     }
 
     </script>

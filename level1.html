@@ -8,10 +8,10 @@
   <!-- <script type="text/javascript" src="initScene.js"></script> -->
 </head>
 <body>
-  <a href="index.html" class="btn-success">Back</a>
+  <a href="index.html" class="btn-success btn-lg">Back</a>
   <canvas id = "renderCanvas"></canvas>
   <script>
-    var canvas, engine, scene, camera, gravity, table, box, box2, isHolding, paper, targetX, targetZ, wall, wall2, wall3, power, done, thrown, powerY;
+    var canvas, engine, scene, camera, gravity, table, box, box2, isHolding, paper, targetX, targetZ, wall, wall2, wall3, power, done, thrown, powerY, points = 0, txtPoints;
     document.addEventListener("DOMContentLoaded", function(){
       //initScene();
       //Get canvas
@@ -111,7 +111,7 @@
 
       /* Trashcan Hitbox */
       var hitBox = BABYLON.MeshBuilder.CreateBox("hitBox", {height: 6, width: 6, depth: 1}, scene);
-      // hitBox.isVisible = false;
+      hitBox.isVisible = false;
       hitBox.position = new BABYLON.Vector3(30, -2, 5);
       hitBox.rotate(new BABYLON.Vector3(5, 0, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
       hitBox.physicsImpostor = new BABYLON.PhysicsImpostor(hitBox,
@@ -158,6 +158,7 @@
       //Create light
       var light = new BABYLON.HemisphericLight("hLight", new BABYLON.Vector3(0, 8, 0), scene);
 
+      displayPoints();
       /* Spacebar control to throw the paper */
       power = 0;
       powerY = 0;
@@ -228,12 +229,12 @@
           thrown = false;
           powerY = 0;
           power = 0;
+          points = 0;
+          txtPoints.text = "Points: " + points;
           var boo = new BABYLON.Sound("boo", "Crowd Boo 3-SoundBible.com-595364990.wav", scene, null, {loop: false, autoplay:true});
           setTimeout(function(){ 
             paper = createPaper(lantai, target, kotaksampah);
           }, 2000);
-          // console.log(thrown);
-          // console.log(done);
         }
       })
     }
@@ -246,15 +247,14 @@
           thrown = false;
           power = 0;
           powerY = 0;
-          // paper.dispose();
+          points += 1;
+          txtPoints.text = "Points: " + points;
           var applause = new BABYLON.Sound("applause", "applause-2.wav", scene, null, {loop: false, autoplay:true});
-          //point++;
+          
 
           setTimeout(function(){
             paper = createPaper(lantai, target, kotaksampah);
           }, 2000);
-          // console.log(thrown);
-          // console.log(done);
         }
       })      
     }
@@ -266,10 +266,12 @@
           thrown = false;
           powerY = 0;
           power = 0;
+          points = 0;
+          txtPoints.text = "Points: " + points;
           var boo = new BABYLON.Sound("boo", "Crowd Boo 3-SoundBible.com-595364990.wav", scene, null, {loop: false, autoplay:true});
           setTimeout(function(){ 
             paper = createPaper(lantai, target, kotaksampah); 
-            //yak, jadi kalo gw createPaper() gini, dia ga ke apply phisics impostornya(?? harusnya sih keapply, soalnya kan applynya udah di dlm functionnya) or idk, somehow registerOnCollidenya ga ke trigger 
+            
           }, 2000);
           // console.log(thrown);
           // console.log(done);
@@ -284,6 +286,9 @@
           thrown = false;
           powerY = 0;
           power = 0;
+          kertas.setEnabled(false);
+          points = 0;
+          txtPoints.text = "Points: " + points;
           setTimeout(function(){ 
             paper = createPaper(lantai, target, kotaksampah); 
             //yak, jadi kalo gw createPaper() gini, dia ga ke apply phisics impostornya(?? harusnya sih keapply, soalnya kan applynya udah di dlm functionnya) or idk, somehow registerOnCollidenya ga ke trigger 
@@ -292,6 +297,19 @@
           // console.log(done);
         }
       })
+    }
+
+    function displayPoints() {
+      var frame = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("frame");
+
+      txtPoints = new BABYLON.GUI.TextBlock();
+      txtPoints.text = "Points = " + points;
+      txtPoints.color = "black";
+      txtPoints.fontSize = 24;
+      txtPoints.left = "-1%";
+      txtPoints.top = '-45%';
+
+      frame.addControl(txtPoints);
     }
 
     });
