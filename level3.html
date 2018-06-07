@@ -173,7 +173,7 @@
       })
 
       /* Trashcan Hitbox */
-      var hitBox = BABYLON.MeshBuilder.CreateBox("hitBox", {height: 3, width: 3, depth: 1}, scene);
+      var hitBox = BABYLON.MeshBuilder.CreateBox("hitBox", {height: 6, width: 6, depth: 1}, scene);
       hitBox.isVisible = false;
       hitBox.position = new BABYLON.Vector3(30, -4, 5);
       hitBox.rotate(new BABYLON.Vector3(5, 0, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
@@ -203,7 +203,7 @@
       /* floor */
       floor = new BABYLON.Mesh.CreateGround("floor", 100, 80, 1, scene);
       floor.position = new BABYLON.Vector3(30, -10, 6);
-      floor.physicImpostor = new BABYLON.PhysicsImpostor(floor, 
+      floor.physicsImpostor = new BABYLON.PhysicsImpostor(floor, 
       BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.7, friction: 0.5}, scene);
 
       var floorMat = new BABYLON.StandardMaterial("floorMat", scene);
@@ -218,15 +218,6 @@
 
       //create camera
       camera = new BABYLON.ArcRotateCamera("Camera", Math.PI, Math.PI/2.5, 7, new BABYLON.Vector3(5, 0, 5), scene);
-      camera.attachControl(canvas, true);
-      // camera = new BABYLON.FollowCamera("followCam", new BABYLON.Vector3(0, 0, 0), scene);
-      // camera.radius = 10;
-      // camera.heightOffset = 5;
-      // camera.rotationOffset = 0;
-      // camera.cameraAcceleration = 0.005;
-      // camera.maxCameraSpeed = 10;
-      // camera.attachControl(canvas, true);
-      // camera.lockedTarget = table;
 
       //Create light
       var light = new BABYLON.HemisphericLight("hLight", new BABYLON.Vector3(0, 8, 0), scene);

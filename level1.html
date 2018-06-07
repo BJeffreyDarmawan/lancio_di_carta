@@ -97,7 +97,7 @@
       /* Trashcan Mesh */
       trashCan = new BABYLON.Mesh.CreateBox("trashCan", 1.0, scene);
       trashCan.isVisible = false;
-      trashCan.position = new BABYLON.Vector3(40, -6, 5);
+      trashCan.position = new BABYLON.Vector3(30, -6, 5);
       trashCan.scaling = new BABYLON.Vector3(5, 5, 5);
       trashCan.physicsImpostor = new BABYLON.PhysicsImpostor(trashCan, BABYLON.PhysicsImpostor.BoxImpostor, 
       {mass: 10000, restitution: 0.9, friction: 0.9}, scene);
@@ -110,9 +110,9 @@
       })
 
       /* Trashcan Hitbox */
-      var hitBox = BABYLON.MeshBuilder.CreateBox("hitBox", {height: 5, width: 5, depth: 1}, scene);
-      hitBox.isVisible = false;
-      hitBox.position = new BABYLON.Vector3(40, -2, 5);
+      var hitBox = BABYLON.MeshBuilder.CreateBox("hitBox", {height: 6, width: 6, depth: 1}, scene);
+      // hitBox.isVisible = false;
+      hitBox.position = new BABYLON.Vector3(30, -2, 5);
       hitBox.rotate(new BABYLON.Vector3(5, 0, 0), new BABYLON.Angle.FromDegrees(90).radians(), BABYLON.Space.LOCAL);
       hitBox.physicsImpostor = new BABYLON.PhysicsImpostor(hitBox,
       BABYLON.PhysicsImpostor.BoxImpostor, {mass: 1000, restitution: 0.9, friction: 0.9}, scene);
@@ -139,7 +139,7 @@
       /* floor */
       floor = new BABYLON.Mesh.CreateGround("floor", 80, 60, 1, scene);
       floor.position = new BABYLON.Vector3(30, -10, 6);
-      floor.physicImpostor = new BABYLON.PhysicsImpostor(floor, 
+      floor.physicsImpostor = new BABYLON.PhysicsImpostor(floor, 
       BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.7, friction: 0.5}, scene);
 
       var floorMat = new BABYLON.StandardMaterial("floorMat", scene);
@@ -154,15 +154,6 @@
 
       //create camera
       camera = new BABYLON.ArcRotateCamera("Camera", Math.PI, Math.PI/2.5, 7, new BABYLON.Vector3(5, 0, 5), scene);
-      camera.attachControl(canvas, true);
-      // camera = new BABYLON.FollowCamera("followCam", new BABYLON.Vector3(0, 0, 0), scene);
-      // camera.radius = 10;
-      // camera.heightOffset = 5;
-      // camera.rotationOffset = 0;
-      // camera.cameraAcceleration = 0.005;
-      // camera.maxCameraSpeed = 10;
-      // camera.attachControl(canvas, true);
-      // camera.lockedTarget = table;
 
       //Create light
       var light = new BABYLON.HemisphericLight("hLight", new BABYLON.Vector3(0, 8, 0), scene);
@@ -212,10 +203,6 @@
         friction: 0.2
       }, scene);
 
-      var newPos = Math.floor((Math.random() * (75 - 30) + 10));
-      kotaksampah.position = new BABYLON.Vector3(newPos, -6, 5);
-      target.position = new BABYLON.Vector3(newPos, -2, 5);
-
       BABYLON.SceneLoader.ImportMesh("", "Materials/Design/", "untiene-garbage-papers.babylon", scene, function(newMeshes) {
         for(i = 0; i < newMeshes.length; i++) {
           newMeshes[i].parent = kertas;
@@ -244,7 +231,6 @@
           var boo = new BABYLON.Sound("boo", "Crowd Boo 3-SoundBible.com-595364990.wav", scene, null, {loop: false, autoplay:true});
           setTimeout(function(){ 
             paper = createPaper(lantai, target, kotaksampah);
-             
           }, 2000);
           // console.log(thrown);
           // console.log(done);
@@ -260,15 +246,12 @@
           thrown = false;
           power = 0;
           powerY = 0;
-          paper.dispose();
+          // paper.dispose();
           var applause = new BABYLON.Sound("applause", "applause-2.wav", scene, null, {loop: false, autoplay:true});
           //point++;
 
           setTimeout(function(){
             paper = createPaper(lantai, target, kotaksampah);
-            // var newPos = Math.floor((Math.random() * (75 - 30) + 30));
-            // kotaksampah.position = new BABYLON.Vector3(newPos, -6, 5);
-            // target.position = new BABYLON.Vector3(newPos, -2, 5);
           }, 2000);
           // console.log(thrown);
           // console.log(done);
